@@ -15,6 +15,8 @@ liveReloadServer.server.once("connection", () => {
 
 // Fontend route
 const FrontRouter = require('./routes/front');
+// Bento UI route
+const BentoRouter = require('./routes/bento');
 
 // Set ejs template engine
 app.set('view engine', 'ejs');
@@ -33,6 +35,7 @@ mongoose
 
 
 app.use(FrontRouter);
+app.use('/bento', BentoRouter);
 
 
 const PORT = process.env.PORT || 3000;
