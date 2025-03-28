@@ -17,6 +17,10 @@ liveReloadServer.server.once("connection", () => {
 const FrontRouter = require('./routes/front');
 // Bento UI route
 const BentoRouter = require('./routes/bento');
+// Bento Layout System route
+const BentoLayoutRouter = require('./routes/bento-layout');
+// Merged Bento Dashboard route
+const BentoMergedRouter = require('./routes/bento-merged');
 
 // Set ejs template engine
 app.set('view engine', 'ejs');
@@ -36,6 +40,8 @@ mongoose
 
 app.use(FrontRouter);
 app.use('/bento', BentoRouter);
+app.use('/bento-layout', BentoLayoutRouter);
+app.use('/bento-merged', BentoMergedRouter);
 
 
 const PORT = process.env.PORT || 3000;

@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Bento Layout System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361EE;
+            --secondary-color: #3A0CA3;
+            --accent-color: #F72585;
+            --light-color: #F8F9FA;
+            --dark-color: #212529;
+            --grid-gap: 16px;
+            --widget-border-radius: 16px;
+            --widget-bg: rgba(255, 255, 255, 0.85);
+            --widget-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --transition-speed: 0.25s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark-color);
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .header-title p {
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+
+        .header-controls button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-controls button:hover {
+            background: #3755d8;
+        }
+
+        /* Bento Grid Container */
+        .bento-container {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: var(--grid-gap);
+            position: relative;
+            min-height: 800px;
+        }
+
+        /* Individual widget styles */
+        .widget {
+            background: var(--widget-bg);
+            border-radius: var(--widget-border-radius);
+            box-shadow: var(--widget-shadow);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .widget.dragging {
+            opacity: 0.9;
+            z-index: 100;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
+            cursor: grabbing;
+        }
+
+        .widget.resizing {
+            transition: none;
+        }
+
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: move;
+        }
+
+        .widget-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .widget-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .widget-action-btn {
+            background: none;
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #555;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .widget-action-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: var(--primary-color);
+        }
+
+        .widget-content {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resize-handle {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            bottom: 4px;
+            right: 4px;
+            cursor: nwse-resize;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .widget:hover .resize-handle {
+            opacity: 1;
+        }
+
+        /* Widget sizes (column spans) */
+        .widget-cols-1 {
+            grid-column: span 1;
+        }
+
+        .widget-cols-2 {
+            grid-column: span 2;
+        }
+
+        .widget-cols-3 {
+            grid-column: span 3;
+        }
+
+        .widget-cols-4 {
+            grid-column: span 4;
+        }
+
+        .widget-cols-5 {
+            grid-column: span 5;
+        }
+
+        .widget-cols-6 {
+            grid-column: span 6;
+        }
+
+        /* Widget heights */
+        .widget-rows-1 {
+            grid-row: span 1;
+            min-height: 200px;
+        }
+
+        .widget-rows-2 {
+            grid-row: span 2;
+            min-height: 400px;
+        }
+
+        .widget-rows-3 {
+            grid-row: span 3;
+            min-height: 600px;
+        }
+
+        /* Widget themes */
+        .widget-theme-primary {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.85) 0%, rgba(58, 12, 163, 0.85) 100%);
+            color: white;
+        }
+
+        .widget-theme-primary .widget-action-btn {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .widget-theme-primary .widget-action-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .widget-theme-accent {
+            background: linear-gradient(135deg, rgba(247, 37, 133, 0.85) 0%, rgba(181, 23, 158, 0.85) 100%);
+            color: white;
+        }
+
+        .widget-theme-accent .widget-action-btn {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .widget-theme-accent .widget-action-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        /* Ghost element for drag preview */
+        .ghost-widget {
+            background: rgba(67, 97, 238, 0.2);
+            border: 2px dashed var(--primary-color);
+            border-radius: var(--widget-border-radius);
+            position: absolute;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* Placeholder for widget resizing */
+        .resize-placeholder {
+            background: rgba(67, 97, 238, 0.15);
+            border: 2px dashed var(--primary-color);
+            border-radius: var(--widget-border-radius);
+            position: absolute;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* Modal for adding new widgets */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 24px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #888;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--dark-color);
+        }
+
+        .modal-body {
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3755d8;
+        }
+
+        .btn-secondary {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+
+        /* Responsive breakpoints */
+        @media (max-width: 1200px) {
+            .bento-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .widget-cols-5, .widget-cols-6 {
+                grid-column: span 4;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .bento-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .widget-cols-3, .widget-cols-4, .widget-cols-5, .widget-cols-6 {
+                grid-column: span 2;
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .header-controls {
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .bento-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .widget {
+                grid-column: span 1 !important;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="header-title">
+                <h1>Bento Layout System</h1>
+                <p>Drag, resize, and customize your dashboard</p>
+            </div>
+            <div class="header-controls">
+                <button id="add-widget-btn"><i class="fas fa-plus"></i> Add Widget</button>
+            </div>
+        </header>
+
+        <div class="bento-container" id="bentoGrid">
+            <!-- Widgets will be dynamically created here -->
+        </div>
+    </div>
+    
+    <!-- Modal for adding widgets -->
+    <div class="modal-overlay" id="addWidgetModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Widget</h2>
+                <button class="modal-close" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addWidgetForm">
+                    <div class="form-group">
+                        <label for="widgetTitle">Widget Title</label>
+                        <input type="text" id="widgetTitle" placeholder="Enter a title for your widget" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="widgetColumns">Width (Columns)</label>
+                            <select id="widgetColumns" required>
+                                <option value="1">1 Column</option>
+                                <option value="2">2 Columns</option>
+                                <option value="3" selected>3 Columns</option>
+                                <option value="4">4 Columns</option>
+                                <option value="5">5 Columns</option>
+                                <option value="6">6 Columns</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="widgetRows">Height (Rows)</label>
+                            <select id="widgetRows" required>
+                                <option value="1" selected>1 Row</option>
+                                <option value="2">2 Rows</option>
+                                <option value="3">3 Rows</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="widgetTheme">Theme</label>
+                        <select id="widgetTheme">
+                            <option value="default" selected>Default</option>
+                            <option value="primary">Primary</option>
+                            <option value="accent">Accent</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelWidgetBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveWidgetBtn">Add Widget</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
+            const bentoGrid = document.getElementById('bentoGrid');
+            const addWidgetBtn = document.getElementById('add-widget-btn');
+            const addWidgetModal = document.getElementById('addWidgetModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const cancelWidgetBtn = document.getElementById('cancelWidgetBtn');
+            const saveWidgetBtn = document.getElementById('saveWidgetBtn');
+            const addWidgetForm = document.getElementById('addWidgetForm');
+            
+            // State Management
+            let widgets = [];
+            let nextWidgetId = 1;
+            let activeDragWidget = null;
+            let activeResizeWidget = null;
+            let ghostElement = null;
+            let resizePlaceholder = null;
+            let startMouseX = 0;
+            let startMouseY = 0;
+            let startWidgetX = 0;
+            let startWidgetY = 0;
+            let startWidgetWidth = 0;
+            let startWidgetHeight = 0;
+            let gridColumnWidth = 0;
+            let gridRowHeight = 0;
+            
+            // Initialize with some default widgets
+            initializeDefaultWidgets();
+            
+            // Calculate grid dimensions
+            calculateGridDimensions();
+            
+            // Event Listeners
+            addWidgetBtn.addEventListener('click', openAddWidgetModal);
+            closeModalBtn.addEventListener('click', closeAddWidgetModal);
+            cancelWidgetBtn.addEventListener('click', closeAddWidgetModal);
+            saveWidgetBtn.addEventListener('click', saveNewWidget);
+            window.addEventListener('resize', calculateGridDimensions);
+            
+            // Initialize default widgets
+            function initializeDefaultWidgets() {
+                const defaultWidgets = [
+                    { id: nextWidgetId++, title: 'Analytics Dashboard', cols: 3, rows: 2, theme: 'default', content: 'Key metrics and performance indicators' },
+                    { id: nextWidgetId++, title: 'Recent Activity', cols: 3, rows: 1, theme: 'primary', content: 'User interactions and system events' },
+                    { id: nextWidgetId++, title: 'Quick Actions', cols: 2, rows: 1, theme: 'default', content: 'Frequently used application functions' },
+                    { id: nextWidgetId++, title: 'Reports', cols: 2, rows: 2, theme: 'accent', content: 'Generated reports and statistics' },
+                    { id: nextWidgetId++, title: 'Team Members', cols: 2, rows: 1, theme: 'default', content: 'Active users and team collaboration' }
+                ];
+                
+                defaultWidgets.forEach(widget => {
+                    widgets.push(widget);
+                    createWidgetElement(widget);
+                });
+            }
+            
+            // Create widget DOM element
+            function createWidgetElement(widget) {
+                const widgetElement = document.createElement('div');
+                widgetElement.className = `widget widget-cols-${widget.cols} widget-rows-${widget.rows}`;
+                
+                if (widget.theme !== 'default') {
+                    widgetElement.classList.add(`widget-theme-${widget.theme}`);
+                }
+                
+                widgetElement.dataset.id = widget.id;
+                
+                widgetElement.innerHTML = `
+                    <div class="widget-header">
+                        <div class="widget-title">${widget.title}</div>
+                        <div class="widget-actions">
+                            <button class="widget-action-btn widget-edit-btn" title="Edit Widget">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="widget-action-btn widget-remove-btn" title="Remove Widget">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="widget-content">
+                        <p>${widget.content || 'Widget content goes here'}</p>
+                    </div>
+                    <div class="resize-handle"></div>
+                `;
+                
+                bentoGrid.appendChild(widgetElement);
+                
+                // Setup drag functionality
+                setupWidgetDrag(widgetElement);
+                
+                // Setup resize functionality
+                setupWidgetResize(widgetElement);
+                
+                // Setup remove button
+                const removeBtn = widgetElement.querySelector('.widget-remove-btn');
+                removeBtn.addEventListener('click', () => removeWidget(widget.id));
+            }
+            
+            // Calculate grid dimensions for drag and resize operations
+            function calculateGridDimensions() {
+                const gridRect = bentoGrid.getBoundingClientRect();
+                const computedStyle = window.getComputedStyle(bentoGrid);
+                const gridGap = parseInt(computedStyle.getPropertyValue('grid-gap'), 10) || 16;
+                
+                // Determine number of columns based on media queries
+                let columns = 6;
+                if (window.innerWidth <= 480) {
+                    columns = 1;
+                } else if (window.innerWidth <= 768) {
+                    columns = 2;
+                } else if (window.innerWidth <= 1200) {
+                    columns = 4;
+                }
+                
+                gridColumnWidth = (gridRect.width - (gridGap * (columns - 1))) / columns;
+                
+                // Approximate row height (assuming square-ish cells)
+                gridRowHeight = 200;
+            }
+            
+            // Setup drag functionality for widgets
+            function setupWidgetDrag(widgetElement) {
+                const widgetHeader = widgetElement.querySelector('.widget-header');
+                
+                widgetHeader.addEventListener('mousedown', startDrag);
+                widgetHeader.addEventListener('touchstart', startDrag, { passive: false });
+                
+                function startDrag(e) {
+                    // Prevent if not left mouse button or if clicking on action buttons
+                    if ((e.type === 'mousedown' && e.button !== 0) || 
+                        e.target.closest('.widget-action-btn')) {
+                        return;
+                    }
+                    
+                    e.preventDefault();
+                    
+                    const widget = widgetElement;
+                    activeDragWidget = widget;
+                    
+                    // Get initial positions
+                    const rect = widget.getBoundingClientRect();
+                    
+                    // Get mouse/touch position
+                    if (e.type === 'touchstart') {
+                        startMouseX = e.touches[0].clientX;
+                        startMouseY = e.touches[0].clientY;
+                    } else {
+                        startMouseX = e.clientX;
+                        startMouseY = e.clientY;
+                    }
+                    
+                    startWidgetX = rect.left;
+                    startWidgetY = rect.top;
+                    
+                    // Create ghost element for drag preview
+                    ghostElement = document.createElement('div');
+                    ghostElement.className = 'ghost-widget';
+                    ghostElement.style.width = `${rect.width}px`;
+                    ghostElement.style.height = `${rect.height}px`;
+                    ghostElement.style.left = `${rect.left}px`;
+                    ghostElement.style.top = `${rect.top}px`;
+                    document.body.appendChild(ghostElement);
+                    
+                    // Add dragging class to widget
+                    widget.classList.add('dragging');
+                    
+                    // Add event listeners for drag and end
+                    document.addEventListener('mousemove', onDrag);
+                    document.addEventListener('touchmove', onDrag, { passive: false });
+                    document.addEventListener('mouseup', endDrag);
+                    document.addEventListener('touchend', endDrag);
+                }
+                
+                function onDrag(e) {
+                    e.preventDefault();
+                    
+                    if (!activeDragWidget || !ghostElement) return;
+                    
+                    // Get current mouse/touch position
+                    let currentX, currentY;
+                    if (e.type === 'touchmove') {
+                        currentX = e.touches[0].clientX;
+                        currentY = e.touches[0].clientY;
+                    } else {
+                        currentX = e.clientX;
+                        currentY = e.clientY;
+                    }
+                    
+                    // Calculate new position
+                    const deltaX = currentX - startMouseX;
+                    const deltaY = currentY - startMouseY;
+                    
+                    // Update ghost element position
+                    ghostElement.style.left = `${startWidgetX + deltaX}px`;
+                    ghostElement.style.top = `${startWidgetY + deltaY}px`;
+                    
+                    // Calculate grid position for snapping
+                    // This would need to be improved for a production implementation
+                    const gridRect = bentoGrid.getBoundingClientRect();
+                    const newGridX = Math.round((startWidgetX + deltaX - gridRect.left) / gridColumnWidth);
+                    const newGridY = Math.round((startWidgetY + deltaY - gridRect.top) / gridRowHeight);
+                    
+                    // Highlight potential drop position (simplified)
+                    // A full implementation would check for collisions and reflow the grid
+                }
+                
+                function endDrag() {
+                    if (!activeDragWidget || !ghostElement) return;
+                    
+                    // Remove ghost element
+                    ghostElement.remove();
+                    ghostElement = null;
+                    
+                    // Remove dragging class
+                    activeDragWidget.classList.remove('dragging');
+                    
+                    // In a full implementation, you would:
+                    // 1. Determine final grid position
+                    // 2. Check for collisions
+                    // 3. Update widget positions in state
+                    // 4. Apply new positions to the DOM
+                    
+                    // Reset active widget
+                    activeDragWidget = null;
+                    
+                    // Remove event listeners
+                    document.removeEventListener('mousemove', onDrag);
+                    document.removeEventListener('touchmove', onDrag);
+                    document.removeEventListener('mouseup', endDrag);
+                    document.removeEventListener('touchend', endDrag);
+                }
+            }
+            
+            // Setup resize functionality for widgets
+            function setupWidgetResize(widgetElement) {
+                const resizeHandle = widgetElement.querySelector('.resize-handle');
+                
+                resizeHandle.addEventListener('mousedown', startResize);
+                resizeHandle.addEventListener('touchstart', startResize, { passive: false });
+                
+                function startResize(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const widget = widgetElement;
+                    activeResizeWidget = widget;
+                    
+                    // Get initial positions and dimensions
+                    const rect = widget.getBoundingClientRect();
+                    
+                    // Get mouse/touch position
+                    if (e.type === 'touchstart') {
+                        startMouseX = e.touches[0].clientX;
+                        startMouseY = e.touches[0].clientY;
+                    } else {
+                        startMouseX = e.clientX;
+                        startMouseY = e.clientY;
+                    }
+                    
+                    startWidgetWidth = rect.width;
+                    startWidgetHeight = rect.height;
+                    
+                    // Create resize placeholder
+                    resizePlaceholder = document.createElement('div');
+                    resizePlaceholder.className = 'resize-placeholder';
+                    resizePlaceholder.style.width = `${rect.width}px`;
+                    resizePlaceholder.style.height = `${rect.height}px`;
+                    resizePlaceholder.style.left = `${rect.left}px`;
+                    resizePlaceholder.style.top = `${rect.top}px`;
+                    document.body.appendChild(resizePlaceholder);
+                    
+                    // Add resizing class to widget
+                    widget.classList.add('resizing');
+                    
+                    // Add event listeners for resize and end
+                    document.addEventListener('mousemove', onResize);
+                    document.addEventListener('touchmove', onResize, { passive: false });
+                    document.addEventListener('mouseup', endResize);
+                    document.addEventListener('touchend', endResize);
+                }
+                
+                function onResize(e) {
+                    e.preventDefault();
+                    
+                    if (!activeResizeWidget || !resizePlaceholder) return;
+                    
+                    // Get current mouse/touch position
+                    let currentX, currentY;
+                    if (e.type === 'touchmove') {
+                        currentX = e.touches[0].clientX;
+                        currentY = e.touches[0].clientY;
+                    } else {
+                        currentX = e.clientX;
+                        currentY = e.clientY;
+                    }
+                    
+                    // Calculate new dimensions
+                    const deltaX = currentX - startMouseX;
+                    const deltaY = currentY - startMouseY;
+                    
+                    const newWidth = Math.max(100, startWidgetWidth + deltaX);
+                    const newHeight = Math.max(100, startWidgetHeight + deltaY);
+                    
+                    // Update resize placeholder dimensions
+                    resizePlaceholder.style.width = `${newWidth}px`;
+                    resizePlaceholder.style.height = `${newHeight}px`;
+                    
+                    // Calculate grid dimensions for snapping
+                    // This would need to be improved for a production implementation
+                    const newCols = Math.max(1, Math.min(6, Math.round(newWidth / gridColumnWidth)));
+                    const newRows = Math.max(1, Math.min(3, Math.round(newHeight / gridRowHeight)));
+                    
+                    // Store potential new dimensions for when resize ends
+                    activeResizeWidget.dataset.newCols = newCols;
+                    activeResizeWidget.dataset.newRows = newRows;
+                }
+                
+                function endResize() {
+                    if (!activeResizeWidget || !resizePlaceholder) return;
+                    
+                    // Get new dimensions from dataset
+                    const newCols = parseInt(activeResizeWidget.dataset.newCols || 1);
+                    const newRows = parseInt(activeResizeWidget.dataset.newRows || 1);
+                    
+                    // Update widget class for new dimensions
+                    for (let i = 1; i <= 6; i++) {
+                        activeResizeWidget.classList.remove(`widget-cols-${i}`);
+                    }
+                    for (let i = 1; i <= 3; i++) {
+                        activeResizeWidget.classList.remove(`widget-rows-${i}`);
+                    }
+                    
+                    activeResizeWidget.classList.add(`widget-cols-${newCols}`);
+                    activeResizeWidget.classList.add(`widget-rows-${newRows}`);
+                    
+                    // Update widget in state
+                    const widgetId = parseInt(activeResizeWidget.dataset.id);
+                    const widgetIndex = widgets.findIndex(w => w.id === widgetId);
+                    
+                    if (widgetIndex !== -1) {
+                        widgets[widgetIndex].cols = newCols;
+                        widgets[widgetIndex].rows = newRows;
+                    }
+                    
+                    // Remove resize placeholder
+                    resizePlaceholder.remove();
+                    resizePlaceholder = null;
+                    
+                    // Remove resizing class
+                    activeResizeWidget.classList.remove('resizing');
+                    
+                    // Clear temporary data attributes
+                    delete activeResizeWidget.dataset.newCols;
+                    delete activeResizeWidget.dataset.newRows;
+                    
+                    // Reset active widget
+                    activeResizeWidget = null;
+                    
+                    // Remove event listeners
+                    document.removeEventListener('mousemove', onResize);
+                    document.removeEventListener('touchmove', onResize);
+                    document.removeEventListener('mouseup', endResize);
+                    document.removeEventListener('touchend', endResize);
+                }
+            }
+            
+            // Modal functions
+            function openAddWidgetModal() {
+                addWidgetModal.classList.add('active');
+                addWidgetForm.reset();
+            }
+            
+            function closeAddWidgetModal() {
+                addWidgetModal.classList.remove('active');
+            }
+            
+            function saveNewWidget() {
+                const title = document.getElementById('widgetTitle').value;
+                const cols = parseInt(document.getElementById('widgetColumns').value);
+                const rows = parseInt(document.getElementById('widgetRows').value);
+                const theme = document.getElementById('widgetTheme').value;
+                
+                if (!title) return;
+                
+                const newWidget = {
+                    id: nextWidgetId++,
+                    title,
+                    cols,
+                    rows,
+                    theme,
+                    content: 'New widget content'
+                };
+                
+                widgets.push(newWidget);
+                createWidgetElement(newWidget);
+                closeAddWidgetModal();
+            }
+            
+            // Remove widget
+            function removeWidget(id) {
+                const widgetElement = document.querySelector(`.widget[data-id="${id}"]`);
+                if (widgetElement) {
+                    widgetElement.remove();
+                }
+                
+                widgets = widgets.filter(widget => widget.id !== id);
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bento Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Global styles */
+        :root {
+            --primary-color: #FF6B6B;
+            --secondary-color: #4361EE;
+            --accent-color: #9C27B0;
+            --text-color: #2D3748;
+            --light-text: #F7FAFC;
+            --bg-color: #EDF2F7;
+            --shadow-color: rgba(0, 0, 0, 0.15);
+            --blur-amount: 12px;
+            --border-radius: 20px;
+            --grid-gap: 25px;
+            --transition-speed: 0.4s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 107, 107, 0.12) 0%, transparent 25%),
+                radial-gradient(circle at 90% 60%, rgba(67, 97, 238, 0.12) 0%, transparent 25%),
+                radial-gradient(circle at 50% 80%, rgba(156, 39, 176, 0.12) 0%, transparent 25%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-color);
+            transition: background-color 0.5s ease;
+        }
+
+        body.dark-mode {
+            --bg-color: #1A202C;
+            --text-color: #E2E8F0;
+            --shadow-color: rgba(0, 0, 0, 0.25);
+            background-color: var(--bg-color);
+        }
+
+        h1, h2, h3, h4 {
+            font-weight: 700;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header styling */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-title p {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        /* Button styles */
+        .btn {
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--text-color);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+        }
+
+        /* Dark mode toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode-toggle i {
+            font-size: 20px;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Glassmorphism effect base */
+        .glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(var(--blur-amount));
+            -webkit-backdrop-filter: blur(var(--blur-amount));
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 
+                0 10px 30px 0 var(--shadow-color),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            transition: all var(--transition-speed) cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .dark-mode .glass {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Bento Grid Container */
+        .bento-container {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-auto-rows: minmax(200px, auto);
+            gap: var(--grid-gap);
+            position: relative;
+            min-height: 800px;
+            perspective: 1000px;
+        }
+
+        /* Widget styling (merges bento-item and widget) */
+        .widget {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: translateZ(0);
+        }
+
+        .widget:hover:not(.dragging):not(.resizing) {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 15px 35px 0 var(--shadow-color),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+            z-index: 5;
+        }
+
+        .widget.dragging {
+            opacity: 0.9;
+            z-index: 100;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
+            cursor: grabbing;
+            transition: none;
+        }
+
+        .widget.resizing {
+            transition: none;
+            z-index: 100;
+        }
+
+        /* Widget header */
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: move;
+        }
+
+        .widget-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .widget:hover .widget-title {
+            transform: translateY(-3px);
+        }
+
+        .widget-actions {
+            display: flex;
+            gap: 8px;
+            z-index: 5;
+        }
+
+        .widget-action-btn {
+            background: none;
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #555;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            position: relative;
+            z-index: 10;
+        }
+
+        .widget-action-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        /* Widget content */
+        .widget-content {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+            font-size: 1rem;
+            line-height: 1.6;
+            transition: opacity 0.3s ease;
+            opacity: 0.9;
+        }
+
+        .widget:hover .widget-content {
+            opacity: 1;
+        }
+
+        /* AI Element Styling */
+        .ai-icon {
+            font-size: 28px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .ai-icon i {
+            transition: transform 0.5s ease;
+        }
+
+        .widget:hover .ai-icon i {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .ai-pattern {
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            width: 150px;
+            height: 150px;
+            opacity: 0.15;
+            z-index: 1;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 25L75 50L50 75L25 50L50 25Z' fill='%234361EE'/%3E%3C/svg%3E");
+            background-size: 80px 80px;
+            transition: transform 0.5s ease;
+        }
+
+        .widget:hover .ai-pattern {
+            transform: rotate(10deg) scale(1.2);
+        }
+
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 20px;
+            color: var(--light-text);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+
+        .widget:hover .ai-badge {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .ai-badge::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        /* Japanese-inspired styling elements */
+        .kanji-watermark {
+            position: absolute;
+            font-family: "Noto Serif JP", serif;
+            font-size: 140px;
+            opacity: 0.04;
+            bottom: -30px;
+            right: 10px;
+            z-index: 1;
+            transition: all 0.8s ease;
+            pointer-events: none;
+        }
+
+        .widget:hover .kanji-watermark {
+            opacity: 0.07;
+            transform: translateY(-5px) rotate(3deg);
+        }
+
+        /* Wave pattern */
+        .wave-pattern {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='25' viewBox='0 0 100 25' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10 C 30 25, 70 0, 100 10 L 100 0 L 0 0 Z' fill='rgba(255,255,255,0.1)'/%3E%3C/svg%3E");
+            background-size: 100px 25px;
+            background-repeat: repeat-x;
+            transition: transform 0.5s ease;
+            pointer-events: none;
+        }
+
+        .widget:hover .wave-pattern {
+            transform: translateX(10px);
+        }
+
+        /* Resize handle */
+        .resize-handle {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            bottom: 4px;
+            right: 4px;
+            cursor: nwse-resize;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .widget:hover .resize-handle {
+            opacity: 1;
+        }
+
+        .widget:hover .resize-handle:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(67, 97, 238, 0.5);
+        }
+
+        /* Widget sizes (column spans) */
+        .widget-cols-1 {
+            grid-column: span 1;
+        }
+
+        .widget-cols-2 {
+            grid-column: span 2;
+        }
+
+        .widget-cols-3 {
+            grid-column: span 3;
+        }
+
+        .widget-cols-4 {
+            grid-column: span 4;
+        }
+
+        .widget-cols-5 {
+            grid-column: span 5;
+        }
+
+        .widget-cols-6 {
+            grid-column: span 6;
+        }
+
+        /* Widget heights */
+        .widget-rows-1 {
+            grid-row: span 1;
+            min-height: 200px;
+        }
+
+        .widget-rows-2 {
+            grid-row: span 2;
+            min-height: 400px;
+        }
+
+        .widget-rows-3 {
+            grid-row: span 3;
+            min-height: 600px;
+        }
+
+        /* Widget themes */
+        .widget-theme-primary {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.85) 0%, rgba(58, 12, 163, 0.85) 100%);
+            color: white;
+        }
+
+        .widget-theme-primary .widget-action-btn {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .widget-theme-primary .widget-action-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .widget-theme-accent {
+            background: linear-gradient(135deg, rgba(247, 37, 133, 0.85) 0%, rgba(181, 23, 158, 0.85) 100%);
+            color: white;
+        }
+
+        .widget-theme-accent .widget-action-btn {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .widget-theme-accent .widget-action-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        /* Ghost element for drag preview */
+        .ghost-widget {
+            background: rgba(67, 97, 238, 0.2);
+            border: 2px dashed var(--primary-color);
+            border-radius: var(--border-radius);
+            position: absolute;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* Placeholder for widget resizing */
+        .resize-placeholder {
+            background: rgba(67, 97, 238, 0.15);
+            border: 2px dashed var(--primary-color);
+            border-radius: var(--border-radius);
+            position: absolute;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* Modal for adding widgets */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            border-radius: 16px;
+            width: 95%;
+            max-width: 500px;
+            padding: 24px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #888;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--dark-color);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-8px) rotate(3deg); }
+            50% { transform: translateY(0px) rotate(0deg); }
+            75% { transform: translateY(8px) rotate(-3deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        /* Entry animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .widget {
+            opacity: 0;
+            animation: fadeInUp 0.8s forwards;
+        }
+
+        /* Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: particleFloat 15s infinite linear;
+        }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-100vh) rotate(360deg); }
+        }
+
+        /* Glow effect */
+        .glow-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: var(--border-radius);
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .widget:hover .glow-effect {
+            opacity: 1;
+        }
+
+        /* Responsive breakpoints */
+        @media (max-width: 1200px) {
+            .bento-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .widget-cols-5, .widget-cols-6 {
+                grid-column: span 4;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .bento-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .widget-cols-3, .widget-cols-4, .widget-cols-5, .widget-cols-6 {
+                grid-column: span 2;
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .header-controls {
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .bento-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .widget {
+                grid-column: span 1 !important;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="dark-mode-toggle" id="darkModeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="particles" id="particles"></div>
+
+    <div class="app-container">
+        <header>
+            <div class="header-title">
+                <h1>AI Bento Dashboard</h1>
+                <p>An interactive Japanese-inspired dashboard with drag & drop widgets</p>
+            </div>
+            <div class="header-controls">
+                <button class="btn btn-primary" id="add-widget-btn"><i class="fas fa-plus"></i> Add Widget</button>
+            </div>
+        </header>
+
+        <div class="bento-container" id="bentoGrid">
+            <!-- Widgets will be dynamically created here -->
+        </div>
+    </div>
+    
+    <!-- Modal for adding widgets -->
+    <div class="modal-overlay" id="addWidgetModal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h2>Add New Widget</h2>
+                <button class="modal-close" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addWidgetForm">
+                    <div class="form-group">
+                        <label for="widgetTitle">Widget Title</label>
+                        <input type="text" id="widgetTitle" placeholder="Enter a title for your widget" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="widgetColumns">Width (Columns)</label>
+                            <select id="widgetColumns" required>
+                                <option value="1">1 Column</option>
+                                <option value="2">2 Columns</option>
+                                <option value="3" selected>3 Columns</option>
+                                <option value="6">Full Width</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="widgetRows">Height (Rows)</label>
+                            <select id="widgetRows" required>
+                                <option value="1" selected>1 Row</option>
+                                <option value="2">2 Rows</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="widgetTheme">Theme</label>
+                        <select id="widgetTheme">
+                            <option value="default" selected>Default</option>
+                            <option value="primary">Primary</option>
+                            <option value="accent">Accent</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="widgetIcon">Icon</label>
+                        <select id="widgetIcon">
+                            <option value="chart-line">Analytics</option>
+                            <option value="brain">AI</option>
+                            <option value="user-circle">Profile</option>
+                            <option value="bell">Notifications</option>
+                            <option value="cog">Settings</option>
+                            <option value="calendar">Calendar</option>
+                            <option value="image">Media</option>
+                            <option value="file-alt">Documents</option>
+                            <option value="comments">Messages</option>
+                            <option value="tasks">Tasks</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="widgetKanji">Kanji (Optional)</label>
+                        <select id="widgetKanji">
+                            <option value="">None</option>
+                            <option value="智">智 (Intelligence)</option>
+                            <option value="創">創 (Creation)</option>
+                            <option value="力">力 (Power)</option>
+                            <option value="美">美 (Beauty)</option>
+                            <option value="技">技 (Skill)</option>
+                            <option value="和">和 (Harmony)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelWidgetBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveWidgetBtn">Add Widget</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
+            const bentoGrid = document.getElementById('bentoGrid');
+            const addWidgetBtn = document.getElementById('add-widget-btn');
+            const addWidgetModal = document.getElementById('addWidgetModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const cancelWidgetBtn = document.getElementById('cancelWidgetBtn');
+            const saveWidgetBtn = document.getElementById('saveWidgetBtn');
+            const addWidgetForm = document.getElementById('addWidgetForm');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const body = document.body;
+            const moonIcon = darkModeToggle.querySelector('i');
+            
+            // State Management
+            let widgets = [];
+            let nextWidgetId = 1;
+            let activeDragWidget = null;
+            let activeResizeWidget = null;
+            let ghostElement = null;
+            let resizePlaceholder = null;
+            let startMouseX = 0;
+            let startMouseY = 0;
+            let startWidgetX = 0;
+            let startWidgetY = 0;
+            let startWidgetWidth = 0;
+            let startWidgetHeight = 0;
+            let gridColumnWidth = 0;
+            let gridRowHeight = 0;
+            
+            // Initialize with default widgets
+            initializeDefaultWidgets();
+            
+            // Calculate grid dimensions
+            calculateGridDimensions();
+            
+            // Create particles
+            createParticles();
+            
+            // Event Listeners
+            addWidgetBtn.addEventListener('click', openAddWidgetModal);
+            closeModalBtn.addEventListener('click', closeAddWidgetModal);
+            cancelWidgetBtn.addEventListener('click', closeAddWidgetModal);
+            saveWidgetBtn.addEventListener('click', saveNewWidget);
+            window.addEventListener('resize', calculateGridDimensions);
+            
+            // Dark mode toggle
+            darkModeToggle.addEventListener('click', () => {
+                body.classList.toggle('dark-mode');
+                
+                if (body.classList.contains('dark-mode')) {
+                    moonIcon.classList.remove('fa-moon');
+                    moonIcon.classList.add('fa-sun');
+                } else {
+                    moonIcon.classList.remove('fa-sun');
+                    moonIcon.classList.add('fa-moon');
+                }
+            });
+            
+            // Initialize default widgets
+            function initializeDefaultWidgets() {
+                const defaultWidgets = [
+                    { 
+                        id: nextWidgetId++, 
+                        title: 'Analytics Dashboard', 
+                        cols: 3, 
+                        rows: 2, 
+                        theme: 'default',
+                        icon: 'chart-line',
+                        kanji: '智',
+                        content: 'Key metrics and performance indicators'
+                    },
+                    { 
+                        id: nextWidgetId++, 
+                        title: 'Neural Processing', 
+                        cols: 3, 
+                        rows: 1, 
+                        theme: 'primary',
+                        icon: 'brain',
+                        kanji: '機',
+                        content: 'Advanced AI algorithms analyze your data' 
+                    },
+                    { 
+                        id: nextWidgetId++, 
+                        title: 'Quick Actions', 
+                        cols: 2, 
+                        rows: 1, 
+                        theme: 'default',
+                        icon: 'bolt',
+                        content: 'Frequently used application functions' 
+                    },
+                    { 
+                        id: nextWidgetId++, 
+                        title: 'Content Generator', 
+                        cols: 2, 
+                        rows: 2, 
+                        theme: 'accent',
+                        icon: 'pen-fancy',
+                        kanji: '文',
+                        content: 'Create content with advanced language models' 
+                    },
+                    { 
+                        id: nextWidgetId++, 
+                        title: 'Profile', 
+                        cols: 2, 
+                        rows: 1, 
+                        theme: 'default',
+                        icon: 'user-circle',
+                        kanji: '個',
+                        content: 'Manage your personal settings and preferences' 
+                    }
+                ];
+                
+                defaultWidgets.forEach(widget => {
+                    widgets.push(widget);
+                    createWidgetElement(widget);
+                });
+            }
+            
+            // Create widget DOM element
+            function createWidgetElement(widget) {
+                const widgetElement = document.createElement('div');
+                widgetElement.className = `widget widget-cols-${widget.cols} widget-rows-${widget.rows} glass`;
+                
+                // Add animation delay based on widget ID for staggered entrance
+                widgetElement.style.animationDelay = `${(widget.id - 1) * 0.1}s`;
+                
+                if (widget.theme !== 'default') {
+                    widgetElement.classList.add(`widget-theme-${widget.theme}`);
+                }
+                
+                widgetElement.dataset.id = widget.id;
+                
+                let kanjiElement = widget.kanji ? `<div class="kanji-watermark">${widget.kanji}</div>` : '';
+                let waveElement = widget.theme !== 'default' ? '<div class="wave-pattern"></div>' : '';
+                let patternElement = widget.id % 2 === 0 ? '<div class="ai-pattern"></div>' : '';
+                let badgeElement = widget.theme !== 'default' ? `<div class="ai-badge">${widget.theme === 'primary' ? 'AI-Powered' : 'Creative Tools'}</div>` : '';
+                
+                widgetElement.innerHTML = `
+                    <div class="widget-header">
+                        <div class="widget-title">${widget.title}</div>
+                        <div class="widget-actions">
+                            <button class="widget-action-btn widget-edit-btn" title="Edit Widget">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="widget-action-btn widget-remove-btn" title="Remove Widget">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="ai-icon ${widget.id % 3 === 0 ? 'floating' : ''}">
+                        <i class="fas fa-${widget.icon || 'chart-line'}"></i>
+                    </div>
+                    <div class="widget-content">
+                        <p>${widget.content || 'Widget content goes here'}</p>
+                    </div>
+                    ${badgeElement}
+                    ${kanjiElement}
+                    ${patternElement}
+                    ${waveElement}
+                    <div class="glow-effect"></div>
+                    <div class="resize-handle"></div>
+                `;
+                
+                bentoGrid.appendChild(widgetElement);
+                
+                // Setup drag functionality
+                setupWidgetDrag(widgetElement);
+                
+                // Setup resize functionality
+                setupWidgetResize(widgetElement);
+                
+                // Setup remove button
+                const removeBtn = widgetElement.querySelector('.widget-remove-btn');
+                removeBtn.addEventListener('click', () => removeWidget(widget.id));
+                
+                // Setup 3D tilt effect
+                setupTiltEffect(widgetElement);
+                
+                // Add click animation to the entire widget
+                widgetElement.addEventListener('click', function(e) {
+                    if (!e.target.closest('.widget-action-btn') && 
+                        !e.target.closest('.resize-handle') && 
+                        !activeDragWidget && 
+                        !activeResizeWidget) {
+                        addClickEffect(this);
+                    }
+                });
+            }
+            
+            // Setup 3D tilt effect
+            function setupTiltEffect(element) {
+                element.addEventListener('mousemove', (e) => {
+                    if (activeDragWidget || activeResizeWidget) return;
+                    
+                    const rect = element.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const xPercent = x / rect.width - 0.5;
+                    const yPercent = y / rect.height - 0.5;
+                    
+                    const tiltAmount = 3; // Max degrees of tilt
+                    const rotateX = tiltAmount * yPercent * -1;
+                    const rotateY = tiltAmount * xPercent;
+                    
+                    element.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(0)`;
+                });
+                
+                element.addEventListener('mouseleave', () => {
+                    element.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0)';
+                });
+            }
+            
+            // Add click animation
+            function addClickEffect(element) {
+                element.classList.add('click-effect');
+                element.style.transform = 'scale(0.98)';
+                
+                setTimeout(() => {
+                    element.style.transform = 'scale(1)';
+                    setTimeout(() => {
+                        element.classList.remove('click-effect');
+                    }, 200);
+                }, 200);
+            }
+            
+            // Setup widget drag functionality
+            function setupWidgetDrag(element) {
+                const header = element.querySelector('.widget-header');
+                
+                header.addEventListener('mousedown', startDrag);
+                
+                function startDrag(e) {
+                    e.preventDefault();
+                    
+                    if (activeResizeWidget) return;
+                    
+                    const rect = element.getBoundingClientRect();
+                    
+                    activeDragWidget = element;
+                    element.classList.add('dragging');
+                    
+                    // Save starting positions
+                    startMouseX = e.clientX;
+                    startMouseY = e.clientY;
+                    startWidgetX = rect.left;
+                    startWidgetY = rect.top;
+                    
+                    // Create ghost element
+                    createGhostElement(element);
+                    
+                    // Add global mouse events
+                    document.addEventListener('mousemove', handleDrag);
+                    document.addEventListener('mouseup', stopDrag);
+                }
+                
+                function handleDrag(e) {
+                    if (!activeDragWidget) return;
+                    
+                    // Calculate the new position
+                    const deltaX = e.clientX - startMouseX;
+                    const deltaY = e.clientY - startMouseY;
+                    
+                    // Update position of the dragged element
+                    activeDragWidget.style.position = 'absolute';
+                    activeDragWidget.style.left = `${startWidgetX + deltaX}px`;
+                    activeDragWidget.style.top = `${startWidgetY + deltaY}px`;
+                    activeDragWidget.style.width = `${startWidgetWidth}px`;
+                    activeDragWidget.style.height = `${startWidgetHeight}px`;
+                    activeDragWidget.style.zIndex = '100';
+                    
+                    // Calculate grid position for ghost element
+                    const gridRect = bentoGrid.getBoundingClientRect();
+                    const relativeX = e.clientX - gridRect.left;
+                    const relativeY = e.clientY - gridRect.top;
+                    
+                    // Calculate grid column and row
+                    const col = Math.floor(relativeX / gridColumnWidth) + 1;
+                    const row = Math.floor(relativeY / gridRowHeight) + 1;
+                    
+                    // Update ghost element position to snap to grid
+                    if (ghostElement && col > 0 && row > 0) {
+                        const widgetColSpan = parseInt(activeDragWidget.classList.toString().match(/widget-cols-(\d+)/)[1]);
+                        const widgetRowSpan = parseInt(activeDragWidget.classList.toString().match(/widget-rows-(\d+)/)[1]);
+                        
+                        // Calculate grid position in pixels
+                        const gridX = (col - 1) * gridColumnWidth;
+                        const gridY = (row - 1) * gridRowHeight;
+                        
+                        ghostElement.style.left = `${gridX}px`;
+                        ghostElement.style.top = `${gridY}px`;
+                        ghostElement.style.width = `${widgetColSpan * gridColumnWidth - 20}px`;
+                        ghostElement.style.height = `${widgetRowSpan * gridRowHeight - 20}px`;
+                    }
+                }
+                
+                function stopDrag() {
+                    if (!activeDragWidget) return;
+                    
+                    // Clean up the ghost element
+                    if (ghostElement) {
+                        const ghostRect = ghostElement.getBoundingClientRect();
+                        const gridRect = bentoGrid.getBoundingClientRect();
+                        
+                        // Calculate final grid position
+                        const col = Math.floor((ghostRect.left - gridRect.left) / gridColumnWidth) + 1;
+                        const row = Math.floor((ghostRect.top - gridRect.top) / gridRowHeight) + 1;
+                        
+                        // Reset the widget's style
+                        activeDragWidget.style.position = '';
+                        activeDragWidget.style.left = '';
+                        activeDragWidget.style.top = '';
+                        activeDragWidget.style.width = '';
+                        activeDragWidget.style.height = '';
+                        activeDragWidget.style.zIndex = '';
+                        
+                        // Move the widget to the new position in the DOM
+                        if (col > 0 && row > 0) {
+                            // Update the order in the grid
+                            bentoGrid.appendChild(activeDragWidget);
+                            
+                            // Update the widget data
+                            const widgetId = parseInt(activeDragWidget.dataset.id);
+                            const widgetIndex = widgets.findIndex(w => w.id === widgetId);
+                            if (widgetIndex >= 0) {
+                                widgets[widgetIndex].gridCol = col;
+                                widgets[widgetIndex].gridRow = row;
+                            }
+                        }
+                        
+                        bentoGrid.removeChild(ghostElement);
+                        ghostElement = null;
+                    }
+                    
+                    activeDragWidget.classList.remove('dragging');
+                    activeDragWidget = null;
+                    
+                    // Remove global mouse events
+                    document.removeEventListener('mousemove', handleDrag);
+                    document.removeEventListener('mouseup', stopDrag);
+                }
+            }
+            
+            // Setup widget resize functionality
+            function setupWidgetResize(element) {
+                const resizeHandle = element.querySelector('.resize-handle');
+                
+                resizeHandle.addEventListener('mousedown', startResize);
+                
+                function startResize(e) {
+                    e.preventDefault();
+                    
+                    if (activeDragWidget) return;
+                    
+                    const rect = element.getBoundingClientRect();
+                    
+                    activeResizeWidget = element;
+                    element.classList.add('resizing');
+                    
+                    // Save starting positions and dimensions
+                    startMouseX = e.clientX;
+                    startMouseY = e.clientY;
+                    startWidgetWidth = rect.width;
+                    startWidgetHeight = rect.height;
+                    
+                    // Create resize placeholder
+                    createResizePlaceholder(element);
+                    
+                    // Add global mouse events
+                    document.addEventListener('mousemove', handleResize);
+                    document.addEventListener('mouseup', stopResize);
+                }
+                
+                function handleResize(e) {
+                    if (!activeResizeWidget) return;
+                    
+                    // Calculate the new dimensions
+                    const deltaX = e.clientX - startMouseX;
+                    const deltaY = e.clientY - startMouseY;
+                    
+                    const newWidth = Math.max(200, startWidgetWidth + deltaX);
+                    const newHeight = Math.max(200, startWidgetHeight + deltaY);
+                    
+                    // Calculate column and row span based on new dimensions
+                    const newColSpan = Math.max(1, Math.min(6, Math.round(newWidth / gridColumnWidth)));
+                    const newRowSpan = Math.max(1, Math.min(3, Math.round(newHeight / gridRowHeight)));
+                    
+                    // Update resize placeholder
+                    if (resizePlaceholder) {
+                        resizePlaceholder.style.width = `${newColSpan * gridColumnWidth - 20}px`;
+                        resizePlaceholder.style.height = `${newRowSpan * gridRowHeight - 20}px`;
+                        
+                        // Store the new dimensions on the placeholder
+                        resizePlaceholder.dataset.newColSpan = newColSpan;
+                        resizePlaceholder.dataset.newRowSpan = newRowSpan;
+                    }
+                }
+                
+                function stopResize() {
+                    if (!activeResizeWidget) return;
+                    
+                    // Apply the new dimensions from the placeholder
+                    if (resizePlaceholder) {
+                        const newColSpan = parseInt(resizePlaceholder.dataset.newColSpan);
+                        const newRowSpan = parseInt(resizePlaceholder.dataset.newRowSpan);
+                        
+                        // Remove existing column and row classes
+                        activeResizeWidget.classList.forEach(className => {
+                            if (className.match(/widget-cols-\d+/)) {
+                                activeResizeWidget.classList.remove(className);
+                            }
+                            if (className.match(/widget-rows-\d+/)) {
+                                activeResizeWidget.classList.remove(className);
+                            }
+                        });
+                        
+                        // Add new column and row classes
+                        activeResizeWidget.classList.add(`widget-cols-${newColSpan}`);
+                        activeResizeWidget.classList.add(`widget-rows-${newRowSpan}`);
+                        
+                        // Update the widget data
+                        const widgetId = parseInt(activeResizeWidget.dataset.id);
+                        const widgetIndex = widgets.findIndex(w => w.id === widgetId);
+                        if (widgetIndex >= 0) {
+                            widgets[widgetIndex].cols = newColSpan;
+                            widgets[widgetIndex].rows = newRowSpan;
+                        }
+                        
+                        bentoGrid.removeChild(resizePlaceholder);
+                        resizePlaceholder = null;
+                    }
+                    
+                    activeResizeWidget.classList.remove('resizing');
+                    activeResizeWidget = null;
+                    
+                    // Remove global mouse events
+                    document.removeEventListener('mousemove', handleResize);
+                    document.removeEventListener('mouseup', stopResize);
+                }
+            }
+            
+            // Create a ghost element to show where the widget will be placed
+            function createGhostElement(element) {
+                const rect = element.getBoundingClientRect();
+                
+                ghostElement = document.createElement('div');
+                ghostElement.className = 'ghost-widget';
+                
+                // Set the ghost element dimensions based on the original element
+                startWidgetWidth = rect.width;
+                startWidgetHeight = rect.height;
+                
+                ghostElement.style.width = `${startWidgetWidth - 20}px`;
+                ghostElement.style.height = `${startWidgetHeight - 20}px`;
+                
+                // Position the ghost element initially
+                ghostElement.style.left = `${rect.left - bentoGrid.getBoundingClientRect().left}px`;
+                ghostElement.style.top = `${rect.top - bentoGrid.getBoundingClientRect().top}px`;
+                
+                bentoGrid.appendChild(ghostElement);
+            }
+            
+            // Create a placeholder for resizing
+            function createResizePlaceholder(element) {
+                const rect = element.getBoundingClientRect();
+                const gridRect = bentoGrid.getBoundingClientRect();
+                
+                resizePlaceholder = document.createElement('div');
+                resizePlaceholder.className = 'resize-placeholder';
+                
+                // Set the placeholder dimensions and position
+                resizePlaceholder.style.width = `${rect.width - 20}px`;
+                resizePlaceholder.style.height = `${rect.height - 20}px`;
+                resizePlaceholder.style.left = `${rect.left - gridRect.left}px`;
+                resizePlaceholder.style.top = `${rect.top - gridRect.top}px`;
+                
+                bentoGrid.appendChild(resizePlaceholder);
+            }
+            
+            // Calculate grid dimensions
+            function calculateGridDimensions() {
+                const gridRect = bentoGrid.getBoundingClientRect();
+                const gridComputedStyle = window.getComputedStyle(bentoGrid);
+                const gridGap = parseInt(gridComputedStyle.getPropertyValue('gap'));
+                
+                const gridTemplateColumnsValue = gridComputedStyle.getPropertyValue('grid-template-columns');
+                const columnCount = gridTemplateColumnsValue.split(' ').length;
+                
+                gridColumnWidth = (gridRect.width - (gridGap * (columnCount - 1))) / columnCount;
+                gridRowHeight = 200 + gridGap; // Approximate row height
+            }
+            
+            // Modal Functions
+            function openAddWidgetModal() {
+                addWidgetModal.classList.add('active');
+            }
+            
+            function closeAddWidgetModal() {
+                addWidgetModal.classList.remove('active');
+                addWidgetForm.reset();
+            }
+            
+            function saveNewWidget() {
+                const title = document.getElementById('widgetTitle').value;
+                const cols = parseInt(document.getElementById('widgetColumns').value);
+                const rows = parseInt(document.getElementById('widgetRows').value);
+                const theme = document.getElementById('widgetTheme').value;
+                const icon = document.getElementById('widgetIcon').value;
+                const kanji = document.getElementById('widgetKanji').value;
+                
+                if (!title) {
+                    alert('Please enter a widget title');
+                    return;
+                }
+                
+                const newWidget = {
+                    id: nextWidgetId++,
+                    title,
+                    cols,
+                    rows,
+                    theme,
+                    icon,
+                    kanji,
+                    content: 'New widget content'
+                };
+                
+                widgets.push(newWidget);
+                createWidgetElement(newWidget);
+                
+                closeAddWidgetModal();
+            }
+            
+            // Remove a widget
+            function removeWidget(id) {
+                const widgetElement = document.querySelector(`.widget[data-id="${id}"]`);
+                
+                if (widgetElement) {
+                    // Add removal animation
+                    widgetElement.style.transform = 'scale(0.9)';
+                    widgetElement.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        bentoGrid.removeChild(widgetElement);
+                        
+                        // Remove from the widgets array
+                        const widgetIndex = widgets.findIndex(w => w.id === id);
+                        if (widgetIndex >= 0) {
+                            widgets.splice(widgetIndex, 1);
+                        }
+                    }, 300);
+                }
+            }
+            
+            // Create particles
+            function createParticles() {
+                const particlesContainer = document.getElementById('particles');
+                const particleCount = 30;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    
+                    // Random properties
+                    const size = Math.random() * 15 + 5;
+                    const color = getRandomColor(0.2);
+                    const startPositionX = Math.random() * 100;
+                    const duration = Math.random() * 30 + 15;
+                    const delay = Math.random() * 10;
+                    
+                    // Set styles
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.background = color;
+                    particle.style.left = `${startPositionX}%`;
+                    particle.style.top = '100%';
+                    particle.style.animationDuration = `${duration}s`;
+                    particle.style.animationDelay = `${delay}s`;
+                    
+                    particlesContainer.appendChild(particle);
+                }
+            }
+            
+            // Get random color with transparency
+            function getRandomColor(alpha) {
+                const colors = [
+                    `rgba(255, 107, 107, ${alpha})`,  // primary
+                    `rgba(67, 97, 238, ${alpha})`,    // secondary
+                    `rgba(156, 39, 176, ${alpha})`,   // accent
+                    `rgba(58, 12, 163, ${alpha})`,    // dark purple
+                    `rgba(247, 37, 133, ${alpha})`    // pink
+                ];
+                
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+        });
+    </script>
+</body>
+</html> 
