@@ -60,12 +60,17 @@ try {
     console.log(`MongoDB Error: ${err.message}. Continuing without database...`);
 }
 
-app.use(FrontRouter);
+// Set unified bento as the default route
+app.get('/', (req, res) => {
+    res.render('unified-bento');
+});
+
+// Other routes
+app.use('/front', FrontRouter);
 app.use('/bento', BentoRouter);
 app.use('/bento-layout', BentoLayoutRouter);
 app.use('/bento-merged', BentoMergedRouter);
 app.use('/dashboard', UnifiedBentoRouter);
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
