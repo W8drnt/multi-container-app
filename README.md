@@ -8,6 +8,20 @@ You can try it out using the following command.
 
 And open http://localhost:3000 in your browser.
 
+## Unified Bento Dashboard
+
+The ultimate Bento dashboard experience is available at http://localhost:3000/dashboard
+
+Features:
+- Beautiful Japanese-inspired glassmorphism design with particle background effects
+- Fully functional drag-and-drop widget management system
+- Resizable widgets with visual feedback
+- Interactive widgets with animations and floating effects
+- Dark mode toggle
+- Add/remove/customize widgets through an elegant modal interface
+- Fully responsive design that works across all device sizes
+- Widget themes with customizable content
+
 ## Bento UI
 
 A modern Japanese-inspired UI design with glassmorphism effects and AI elements is available at http://localhost:3000/bento
@@ -44,7 +58,6 @@ Features:
 - Widget customization with themes, icons, and kanji characters
 - Resizable widgets with visual feedback
 - Dark mode toggle
-- Fluid animations including floating effects and entry animations
 - Particle background effects for enhanced visual appeal
 - Add/remove/customize widgets through an elegant modal interface
 - Fully responsive design that works across all device sizes

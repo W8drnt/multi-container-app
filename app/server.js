@@ -26,6 +26,8 @@ const BentoRouter = require('./routes/bento');
 const BentoLayoutRouter = require('./routes/bento-layout');
 // Bento Merged Dashboard route
 const BentoMergedRouter = require('./routes/bento-merged');
+// Unified Bento Dashboard route
+const UnifiedBentoRouter = require('./routes/unified-bento');
 
 // Set ejs template engine
 app.set('view engine', 'ejs');
@@ -62,6 +64,7 @@ app.use(FrontRouter);
 app.use('/bento', BentoRouter);
 app.use('/bento-layout', BentoLayoutRouter);
 app.use('/bento-merged', BentoMergedRouter);
+app.use('/dashboard', UnifiedBentoRouter);
 
 
 const PORT = process.env.PORT || 3000;

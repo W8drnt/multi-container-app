@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Bento Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        /* Particle background */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        /* Global styles */
+        :root {
+            --primary-color: #FF6B6B;
+            --secondary-color: #4361EE;
+            --accent-color: #9C27B0;
+            --text-color: #2D3748;
+            --light-text: #F7FAFC;
+            --bg-color: #EDF2F7;
+            --shadow-color: rgba(0, 0, 0, 0.15);
+            --blur-amount: 12px;
+            --border-radius: 20px;
+            --grid-gap: 25px;
+            --transition-speed: 0.4s;
+            --widget-bg: rgba(255, 255, 255, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 107, 107, 0.12) 0%, transparent 25%),
+                radial-gradient(circle at 90% 60%, rgba(67, 97, 238, 0.12) 0%, transparent 25%),
+                radial-gradient(circle at 50% 80%, rgba(156, 39, 176, 0.12) 0%, transparent 25%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-color);
+            transition: background-color 0.5s ease;
+        }
+
+        body.dark-mode {
+            --bg-color: #1A202C;
+            --text-color: #E2E8F0;
+            --shadow-color: rgba(0, 0, 0, 0.25);
+            background-color: var(--bg-color);
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header styling */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-title h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-right: 10px;
+        }
+
+        .header-emoji {
+            display: inline-flex;
+            margin-left: 8px;
+            margin-right: 4px;
+            transform: translateY(2px);
+            font-size: 1.8rem;
+        }
+
+        .header-title p {
+            font-size: 1.05rem;
+            opacity: 0.8;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            line-height: 1.6;
+        }
+
+        /* Dark mode toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode-toggle i {
+            font-size: 20px;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        /* Button styles */
+        .btn {
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--text-color);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Glassmorphism effect base */
+        .glass {
+            background: var(--widget-bg);
+            backdrop-filter: blur(var(--blur-amount));
+            -webkit-backdrop-filter: blur(var(--blur-amount));
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 
+                0 10px 30px 0 var(--shadow-color),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            transition: all var(--transition-speed) cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        /* Bento Grid Container */
+        .bento-container {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: var(--grid-gap);
+            position: relative;
+            min-height: 800px;
+        }
+
+        /* Widget styles */
+        .widget {
+            position: relative;
+            padding: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: fadeInUp 0.6s ease forwards;
+            animation-fill-mode: both;
+            transform: translateY(30px);
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .widget.dragging {
+            opacity: 0.9;
+            z-index: 100;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            cursor: grabbing;
+            animation: none;
+            transform: scale(1.02) !important;
+        }
+
+        .widget.resizing {
+            transition: none;
+            animation: none;
+        }
+
+        /* Widget animation delay for staggered entry */
+        .widget:nth-child(1) { animation-delay: 0.1s; }
+        .widget:nth-child(2) { animation-delay: 0.2s; }
+        .widget:nth-child(3) { animation-delay: 0.3s; }
+        .widget:nth-child(4) { animation-delay: 0.4s; }
+        .widget:nth-child(5) { animation-delay: 0.5s; }
+        .widget:nth-child(6) { animation-delay: 0.6s; }
+        .widget:nth-child(7) { animation-delay: 0.7s; }
+        .widget:nth-child(8) { animation-delay: 0.8s; }
+
+        /* Floating animation for widgets */
+        .widget.floating {
+            animation: floating 4s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: move;
+        }
+
+        .widget-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .widget-emoji {
+            font-size: 1.4rem;
+        }
+
+        .widget-content {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .widget-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .widget-action-btn {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--text-color);
+            opacity: 0.6;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+
+        .widget-action-btn:hover {
+            opacity: 1;
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .widget-action-btn {
+            color: var(--light-text);
+        }
+
+        .dark-mode .widget-action-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Resize handle */
+        .resize-handle {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            bottom: 6px;
+            right: 6px;
+            cursor: nwse-resize;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .widget:hover .resize-handle {
+            opacity: 0.8;
+        }
+
+        /* Widget sizes (column spans) */
+        .widget-cols-1 {
+            grid-column: span 1;
+        }
+
+        .widget-cols-2 {
+            grid-column: span 2;
+        }
+
+        .widget-cols-3 {
+            grid-column: span 3;
+        }
+
+        .widget-cols-4 {
+            grid-column: span 4;
+        }
+
+        .widget-cols-6 {
+            grid-column: span 6;
+        }
+
+        .widget-cols-8 {
+            grid-column: span 8;
+        }
+
+        .widget-cols-12 {
+            grid-column: span 12;
+        }
+
+        /* Widget heights (row spans) */
+        .widget-rows-1 {
+            grid-row: span 1;
+            min-height: 100px;
+        }
+
+        .widget-rows-2 {
+            grid-row: span 2;
+            min-height: 200px;
+        }
+
+        .widget-rows-3 {
+            grid-row: span 3;
+            min-height: 300px;
+        }
+
+        .widget-rows-4 {
+            grid-row: span 4;
+            min-height: 400px;
+        }
+
+        /* Widget themes */
+        .widget-theme-primary {
+            background: linear-gradient(to bottom right, rgba(255, 107, 107, 0.15), rgba(255, 107, 107, 0.05));
+            border-top: 2px solid var(--primary-color);
+        }
+
+        .widget-theme-secondary {
+            background: linear-gradient(to bottom right, rgba(67, 97, 238, 0.15), rgba(67, 97, 238, 0.05));
+            border-top: 2px solid var(--secondary-color);
+        }
+
+        .widget-theme-accent {
+            background: linear-gradient(to bottom right, rgba(156, 39, 176, 0.15), rgba(156, 39, 176, 0.05));
+            border-top: 2px solid var(--accent-color);
+        }
+
+        .widget-theme-default {
+            background: rgba(255, 255, 255, 0.1);
+            border-top: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dark-mode .widget-theme-default {
+            background: rgba(10, 15, 25, 0.4);
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            position: relative;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dark-mode .modal-content {
+            background: rgba(30, 41, 59, 0.95);
+            color: var(--light-text);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .close-modal:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .close-modal:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .bento-container {
+                grid-template-columns: repeat(8, 1fr);
+            }
+            
+            .widget-cols-8, .widget-cols-12 {
+                grid-column: span 8;
+            }
+            
+            .widget-cols-6 {
+                grid-column: span 6;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .bento-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .widget-cols-4, .widget-cols-6, .widget-cols-8, .widget-cols-12 {
+                grid-column: span 4;
+            }
+            
+            .widget-cols-3 {
+                grid-column: span 3;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .header-controls {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .bento-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .widget-cols-2, .widget-cols-3, .widget-cols-4, .widget-cols-6, .widget-cols-8, .widget-cols-12 {
+                grid-column: span 2;
+            }
+            
+            .header-title h1 {
+                font-size: 1.8rem;
+            }
+            
+            .header-title p {
+                font-size: 0.9rem;
+            }
+            
+            body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Dark mode toggle -->
+    <button class="dark-mode-toggle" id="darkModeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Particle background container -->
+    <div id="particles-js"></div>
+
+    <div class="app-container">
+        <header>
+            <div class="header-title">
+                <h1>Unified Bento Dashboard <span class="header-emoji">🍱</span></h1>
+                <p>A powerful, interactive, and beautiful dashboard experience</p>
+            </div>
+            <div class="header-controls">
+                <button class="btn btn-primary" id="addWidgetBtn">
+                    <i class="fas fa-plus"></i>
+                    Add Widget
+                </button>
+            </div>
+        </header>
+
+        <!-- Dashboard Grid Container -->
+        <div class="bento-container" id="bentoContainer">
+            <!-- Widgets will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Add Widget Modal -->
+    <div id="addWidgetModal" class="modal">
+        <!-- Modal content will go here -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize particles.js
+            particlesJS('particles-js', {
+                "particles": {
+                    "number": {
+                        "value": 80,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": "#4361EE"
+                    },
+                    "shape": {
+                        "type": "circle",
+                        "stroke": {
+                            "width": 0,
+                            "color": "#000000"
+                        },
+                        "polygon": {
+                            "nb_sides": 5
+                        }
+                    },
+                    "opacity": {
+                        "value": 0.3,
+                        "random": false,
+                        "anim": {
+                            "enable": false,
+                            "speed": 1,
+                            "opacity_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "size": {
+                        "value": 3,
+                        "random": true,
+                        "anim": {
+                            "enable": false,
+                            "speed": 40,
+                            "size_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#4361EE",
+                        "opacity": 0.2,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 2,
+                        "direction": "none",
+                        "random": false,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false,
+                        "attract": {
+                            "enable": false,
+                            "rotateX": 600,
+                            "rotateY": 1200
+                        }
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": false,
+                            "mode": "repulse"
+                        },
+                        "onclick": {
+                            "enable": false,
+                            "mode": "push"
+                        },
+                        "resize": true
+                    },
+                    "modes": {
+                        "grab": {
+                            "distance": 400,
+                            "line_linked": {
+                                "opacity": 1
+                            }
+                        },
+                        "bubble": {
+                            "distance": 400,
+                            "size": 40,
+                            "duration": 2,
+                            "opacity": 8,
+                            "speed": 3
+                        },
+                        "repulse": {
+                            "distance": 200,
+                            "duration": 0.4
+                        },
+                        "push": {
+                            "particles_nb": 4
+                        },
+                        "remove": {
+                            "particles_nb": 2
+                        }
+                    }
+                },
+                "retina_detect": true
+            });
+            
+            // DOM Elements
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const addWidgetBtn = document.getElementById('addWidgetBtn');
+            const bentoContainer = document.getElementById('bentoContainer');
+            const addWidgetModal = document.getElementById('addWidgetModal');
+            
+            // Widget data - predefined widgets
+            const widgetData = [
+                {
+                    id: 'widget1',
+                    title: 'Analytics Overview',
+                    emoji: '📊',
+                    colSpan: 4,
+                    rowSpan: 2,
+                    theme: 'primary',
+                    content: `
+                        <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                                    <div>
+                                        <h3 style="font-size: 28px; margin-bottom: 5px;">4,732</h3>
+                                        <p style="opacity: 0.7;">Total Visitors</p>
+                                    </div>
+                                    <div>
+                                        <h3 style="font-size: 28px; margin-bottom: 5px;">58%</h3>
+                                        <p style="opacity: 0.7;">Conversion Rate</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="height: 150px; background: linear-gradient(to top right, rgba(255,255,255,0.1), rgba(255,255,255,0.2)); border-radius: 12px; position: relative; overflow: hidden;">
+                                <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100px; display: flex; align-items: flex-end; padding: 0 10px;">
+                                    <div style="width: 8%; height: 40%; background: rgba(255,107,107,0.7); border-radius: 4px 4px 0 0; margin: 0 1%;"></div>
+                                    <div style="width: 8%; height: 60%; background: rgba(255,107,107,0.7); border-radius: 4px 4px 0 0; margin: 0 1%;"></div>
+                                    <div style="width: 8%; height: 30%; background: rgba(255,107,107,0.7); border-radius: 4px 4px 0 0; margin: 0 1%;"></div>
+                                    <div style="width: 8%; height: 80%; background: rgba(255,107,107,0.7); border-radius: 4px 4px 0 0; margin: 0 1%;"></div>
+                                    <div style="width: 8%; height: 50%; background: rgba(255,107,107,0.7); border-radius: 4px 4px 0 0; margin: 0 1%;"></div>
+                                    <div style="width: 8%; height: 70%; background: rgba(255,107,107,0.7); border-radius: 4px 4px 0 0; margin: 0 1%;"></div>
+                                    <div style="width: 8%; height: 65%; background: rgba(255,107,107,0.7); border-radius: 4px 4px 0 0; margin: 0 1%;"></div>
+                                    <div style="width: 8%; height: 90%; background: rgba(255,107,107,0.7); border-radius: 4px 4px 0 0; margin: 0 1%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `,
+                    isFloating: true
+                },
+                {
+                    id: 'widget2',
+                    title: 'Recent Activity',
+                    emoji: '⏱️',
+                    colSpan: 4,
+                    rowSpan: 2,
+                    theme: 'secondary',
+                    content: `
+                        <div style="height: 100%;">
+                            <div class="activity-list">
+                                <div style="display: flex; margin-bottom: 15px; align-items: center;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(67, 97, 238, 0.2); display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+                                        <i class="fas fa-user" style="color: #4361EE;"></i>
+                                    </div>
+                                    <div>
+                                        <p style="font-weight: 600; margin-bottom: 3px;">New user registered</p>
+                                        <p style="font-size: 13px; opacity: 0.7;">5 minutes ago</p>
+                                    </div>
+                                </div>
+                                <div style="display: flex; margin-bottom: 15px; align-items: center;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(67, 97, 238, 0.2); display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+                                        <i class="fas fa-shopping-cart" style="color: #4361EE;"></i>
+                                    </div>
+                                    <div>
+                                        <p style="font-weight: 600; margin-bottom: 3px;">New order received</p>
+                                        <p style="font-size: 13px; opacity: 0.7;">15 minutes ago</p>
+                                    </div>
+                                </div>
+                                <div style="display: flex; margin-bottom: 15px; align-items: center;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(67, 97, 238, 0.2); display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+                                        <i class="fas fa-comment" style="color: #4361EE;"></i>
+                                    </div>
+                                    <div>
+                                        <p style="font-weight: 600; margin-bottom: 3px;">New comment posted</p>
+                                        <p style="font-size: 13px; opacity: 0.7;">30 minutes ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                },
+                {
+                    id: 'widget3',
+                    title: 'Resource Usage',
+                    emoji: '📈',
+                    colSpan: 4,
+                    rowSpan: 2,
+                    theme: 'accent',
+                    content: `
+                        <div style="height: 100%; display: flex; flex-direction: column; gap: 15px;">
+                            <div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <p>CPU Usage</p>
+                                    <p style="font-weight: 600;">68%</p>
+                                </div>
+                                <div style="height: 8px; background: rgba(156, 39, 176, 0.2); border-radius: 4px; overflow: hidden;">
+                                    <div style="height: 100%; width: 68%; background: #9C27B0; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <p>Memory Usage</p>
+                                    <p style="font-weight: 600;">42%</p>
+                                </div>
+                                <div style="height: 8px; background: rgba(156, 39, 176, 0.2); border-radius: 4px; overflow: hidden;">
+                                    <div style="height: 100%; width: 42%; background: #9C27B0; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <p>Disk Usage</p>
+                                    <p style="font-weight: 600;">84%</p>
+                                </div>
+                                <div style="height: 8px; background: rgba(156, 39, 176, 0.2); border-radius: 4px; overflow: hidden;">
+                                    <div style="height: 100%; width: 84%; background: #9C27B0; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                },
+                {
+                    id: 'widget4',
+                    title: 'Weather',
+                    emoji: '☀️',
+                    colSpan: 3,
+                    rowSpan: 2,
+                    theme: 'default',
+                    content: `
+                        <div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+                            <div style="font-size: 40px; margin-bottom: 8px;">☀️</div>
+                            <h3 style="font-size: 28px; margin-bottom: 5px;">24°C</h3>
+                            <p style="opacity: 0.7;">Sunny, Tokyo</p>
+                            <div style="display: flex; gap: 15px; margin-top: 15px; justify-content: center;">
+                                <div>
+                                    <p style="font-size: 14px; opacity: 0.7;">Mon</p>
+                                    <p style="font-size: 14px;">☀️ 25°</p>
+                                </div>
+                                <div>
+                                    <p style="font-size: 14px; opacity: 0.7;">Tue</p>
+                                    <p style="font-size: 14px;">⛅ 23°</p>
+                                </div>
+                                <div>
+                                    <p style="font-size: 14px; opacity: 0.7;">Wed</p>
+                                    <p style="font-size: 14px;">🌧️ 20°</p>
+                                </div>
+                            </div>
+                        </div>
+                    `,
+                    isFloating: true
+                }
+            ];
+            
+            // Dark mode functionality
+            function toggleDarkMode() {
+                document.body.classList.toggle('dark-mode');
+                const icon = darkModeToggle.querySelector('i');
+                
+                if (document.body.classList.contains('dark-mode')) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                    localStorage.setItem('darkMode', 'enabled');
+                } else {
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                    localStorage.setItem('darkMode', 'disabled');
+                }
+            }
+            
+            // Check for saved dark mode preference
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                toggleDarkMode();
+            }
+            
+            darkModeToggle.addEventListener('click', toggleDarkMode);
+            
+            // Add Modal HTML
+            addWidgetModal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Add New Widget</h2>
+                        <button class="close-modal" id="closeModal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="margin-bottom: 20px;">
+                            <label for="widgetTitle" style="display: block; margin-bottom: 8px; font-weight: 500;">Widget Title</label>
+                            <input type="text" id="widgetTitle" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; background: rgba(255,255,255,0.7);" placeholder="Enter widget title">
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label for="widgetEmoji" style="display: block; margin-bottom: 8px; font-weight: 500;">Widget Icon</label>
+                            <input type="text" id="widgetEmoji" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; background: rgba(255,255,255,0.7);" placeholder="Enter emoji (e.g. 📊)">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                            <div>
+                                <label for="widgetCols" style="display: block; margin-bottom: 8px; font-weight: 500;">Column Span</label>
+                                <select id="widgetCols" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; background: rgba(255,255,255,0.7);">
+                                    <option value="2">Small (2)</option>
+                                    <option value="3">Medium (3)</option>
+                                    <option value="4" selected>Large (4)</option>
+                                    <option value="6">X-Large (6)</option>
+                                    <option value="12">Full Width (12)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="widgetRows" style="display: block; margin-bottom: 8px; font-weight: 500;">Row Span</label>
+                                <select id="widgetRows" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; background: rgba(255,255,255,0.7);">
+                                    <option value="1">Small (1)</option>
+                                    <option value="2" selected>Medium (2)</option>
+                                    <option value="3">Large (3)</option>
+                                    <option value="4">X-Large (4)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label for="widgetTheme" style="display: block; margin-bottom: 8px; font-weight: 500;">Widget Theme</label>
+                            <select id="widgetTheme" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; background: rgba(255,255,255,0.7);">
+                                <option value="default">Default</option>
+                                <option value="primary">Primary</option>
+                                <option value="secondary">Secondary</option>
+                                <option value="accent">Accent</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label for="widgetAnimation" style="display: block; margin-bottom: 8px; font-weight: 500;">Animation</label>
+                            <div style="display: flex; align-items: center;">
+                                <input type="checkbox" id="widgetAnimation" style="margin-right: 8px;">
+                                <label for="widgetAnimation">Enable floating animation</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                        <button class="btn btn-secondary" id="cancelAddWidget" style="margin-right: 10px;">Cancel</button>
+                        <button class="btn btn-primary" id="confirmAddWidget">Add Widget</button>
+                    </div>
+                </div>
+            `;
+            
+            // Create a widget element
+            function createWidgetElement(widget) {
+                const widgetElement = document.createElement('div');
+                widgetElement.classList.add(
+                    'widget', 
+                    'glass', 
+                    `widget-cols-${widget.colSpan}`, 
+                    `widget-rows-${widget.rowSpan}`,
+                    `widget-theme-${widget.theme}`
+                );
+                widgetElement.setAttribute('data-id', widget.id);
+                
+                if (widget.isFloating) {
+                    widgetElement.classList.add('floating');
+                }
+                
+                widgetElement.innerHTML = `
+                    <div class="widget-header">
+                        <div class="widget-title">
+                            <span class="widget-emoji">${widget.emoji}</span>
+                            ${widget.title}
+                        </div>
+                        <div class="widget-actions">
+                            <button class="widget-action-btn edit-widget" data-id="${widget.id}">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <button class="widget-action-btn delete-widget" data-id="${widget.id}">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="widget-content">
+                        ${widget.content || ''}
+                    </div>
+                    <div class="resize-handle" data-id="${widget.id}"></div>
+                `;
+                
+                return widgetElement;
+            }
+            
+            // Initialize dashboard with widgets
+            function initializeDashboard() {
+                widgetData.forEach(widget => {
+                    const widgetElement = createWidgetElement(widget);
+                    bentoContainer.appendChild(widgetElement);
+                });
+                
+                setupDragAndDrop();
+                setupResizing();
+                setupWidgetActions();
+            }
+            
+            // Setup drag and drop functionality
+            function setupDragAndDrop() {
+                const widgets = document.querySelectorAll('.widget');
+                
+                widgets.forEach(widget => {
+                    const header = widget.querySelector('.widget-header');
+                    
+                    header.addEventListener('mousedown', (e) => {
+                        if (e.target.classList.contains('widget-action-btn') || 
+                            e.target.parentElement.classList.contains('widget-action-btn')) {
+                            return;
+                        }
+                        
+                        const rect = widget.getBoundingClientRect();
+                        const offsetX = e.clientX - rect.left;
+                        const offsetY = e.clientY - rect.top;
+                        
+                        widget.classList.add('dragging');
+                        widget.style.width = rect.width + 'px';
+                        widget.style.height = rect.height + 'px';
+                        widget.style.position = 'absolute';
+                        widget.style.zIndex = '100';
+                        widget.style.top = rect.top + 'px';
+                        widget.style.left = rect.left + 'px';
+                        
+                        document.addEventListener('mousemove', onDrag);
+                        document.addEventListener('mouseup', stopDrag);
+                        
+                        function onDrag(e) {
+                            widget.style.top = (e.clientY - offsetY) + 'px';
+                            widget.style.left = (e.clientX - offsetX) + 'px';
+                        }
+                        
+                        function stopDrag() {
+                            document.removeEventListener('mousemove', onDrag);
+                            document.removeEventListener('mouseup', stopDrag);
+                            
+                            const containerRect = bentoContainer.getBoundingClientRect();
+                            const widgetRect = widget.getBoundingClientRect();
+                            
+                            // Calculate the closest grid position
+                            const cellWidth = (containerRect.width - 25) / 12; // Adjusted for gap
+                            const cellHeight = 100; // Approximate height of a row
+                            
+                            const relativeLeft = widgetRect.left - containerRect.left;
+                            const relativeTop = widgetRect.top - containerRect.top;
+                            
+                            const colIndex = Math.round(relativeLeft / cellWidth);
+                            const rowIndex = Math.round(relativeTop / cellHeight);
+                            
+                            // Reset the widget's style for grid layout
+                            widget.style.position = '';
+                            widget.style.top = '';
+                            widget.style.left = '';
+                            widget.style.width = '';
+                            widget.style.height = '';
+                            widget.style.zIndex = '';
+                            widget.classList.remove('dragging');
+                            
+                            // Set the new grid position
+                            if (colIndex >= 0 && colIndex < 12) {
+                                widget.style.gridColumn = `${colIndex + 1} / span ${widget.classList.contains('widget-cols-12') ? 12 : 
+                                                         widget.classList.contains('widget-cols-6') ? 6 : 
+                                                         widget.classList.contains('widget-cols-4') ? 4 : 
+                                                         widget.classList.contains('widget-cols-3') ? 3 : 2}`;
+                            }
+                            
+                            if (rowIndex >= 0) {
+                                widget.style.gridRow = `${rowIndex + 1} / span ${widget.classList.contains('widget-rows-4') ? 4 : 
+                                                      widget.classList.contains('widget-rows-3') ? 3 : 
+                                                      widget.classList.contains('widget-rows-2') ? 2 : 1}`;
+                            }
+                        }
+                    });
+                });
+            }
+            
+            // Setup resizing functionality
+            function setupResizing() {
+                const resizeHandles = document.querySelectorAll('.resize-handle');
+                
+                resizeHandles.forEach(handle => {
+                    handle.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const widgetId = handle.getAttribute('data-id');
+                        const widget = document.querySelector(`.widget[data-id="${widgetId}"]`);
+                        
+                        widget.classList.add('resizing');
+                        
+                        const startWidth = widget.offsetWidth;
+                        const startHeight = widget.offsetHeight;
+                        const startX = e.clientX;
+                        const startY = e.clientY;
+                        
+                        document.addEventListener('mousemove', onResize);
+                        document.addEventListener('mouseup', stopResize);
+                        
+                        function onResize(e) {
+                            const width = startWidth + (e.clientX - startX);
+                            const height = startHeight + (e.clientY - startY);
+                            
+                            // Determine the new column and row span based on the size
+                            const containerWidth = bentoContainer.offsetWidth;
+                            const cellWidth = (containerWidth - 25) / 12; // Adjusted for gap
+                            
+                            let newColSpan = Math.max(2, Math.round(width / cellWidth));
+                            newColSpan = Math.min(12, newColSpan); // Max 12 columns
+                            
+                            let newRowSpan = Math.max(1, Math.round(height / 100));
+                            newRowSpan = Math.min(4, newRowSpan); // Max 4 rows
+                            
+                            // Update widget classes for new size
+                            const colClasses = ['widget-cols-1', 'widget-cols-2', 'widget-cols-3', 'widget-cols-4', 'widget-cols-6', 'widget-cols-8', 'widget-cols-12'];
+                            const rowClasses = ['widget-rows-1', 'widget-rows-2', 'widget-rows-3', 'widget-rows-4'];
+                            
+                            colClasses.forEach(cls => widget.classList.remove(cls));
+                            rowClasses.forEach(cls => widget.classList.remove(cls));
+                            
+                            widget.classList.add(`widget-cols-${newColSpan}`);
+                            widget.classList.add(`widget-rows-${newRowSpan}`);
+                        }
+                        
+                        function stopResize() {
+                            document.removeEventListener('mousemove', onResize);
+                            document.removeEventListener('mouseup', stopResize);
+                            widget.classList.remove('resizing');
+                        }
+                    });
+                });
+            }
+            
+            // Setup widget actions (edit/delete)
+            function setupWidgetActions() {
+                // Delete widget functionality
+                document.querySelectorAll('.delete-widget').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const widgetId = this.getAttribute('data-id');
+                        const widget = document.querySelector(`.widget[data-id="${widgetId}"]`);
+                        
+                        if (widget) {
+                            widget.classList.add('fade-out');
+                            setTimeout(() => {
+                                widget.remove();
+                            }, 300);
+                        }
+                    });
+                });
+            }
+            
+            // Modal functionality
+            function openModal() {
+                addWidgetModal.style.display = 'flex';
+                setTimeout(() => {
+                    addWidgetModal.classList.add('active');
+                }, 10);
+            }
+            
+            function closeModal() {
+                addWidgetModal.classList.remove('active');
+                setTimeout(() => {
+                    addWidgetModal.style.display = 'none';
+                }, 300);
+            }
+            
+            addWidgetBtn.addEventListener('click', openModal);
+            
+            document.getElementById('closeModal').addEventListener('click', closeModal);
+            document.getElementById('cancelAddWidget').addEventListener('click', closeModal);
+            
+            // Add new widget
+            document.getElementById('confirmAddWidget').addEventListener('click', function() {
+                const title = document.getElementById('widgetTitle').value || 'New Widget';
+                const emoji = document.getElementById('widgetEmoji').value || '✨';
+                const colSpan = document.getElementById('widgetCols').value;
+                const rowSpan = document.getElementById('widgetRows').value;
+                const theme = document.getElementById('widgetTheme').value;
+                const isFloating = document.getElementById('widgetAnimation').checked;
+                
+                const id = 'widget' + new Date().getTime();
+                
+                const newWidget = {
+                    id,
+                    title,
+                    emoji,
+                    colSpan,
+                    rowSpan,
+                    theme,
+                    isFloating,
+                    content: `
+                        <div style="height: 100%; display: flex; align-items: center; justify-content: center; text-align: center;">
+                            <p>Configure this widget content</p>
+                        </div>
+                    `
+                };
+                
+                const widgetElement = createWidgetElement(newWidget);
+                bentoContainer.appendChild(widgetElement);
+                
+                setupDragAndDrop();
+                setupResizing();
+                setupWidgetActions();
+                
+                closeModal();
+                
+                // Reset form
+                document.getElementById('widgetTitle').value = '';
+                document.getElementById('widgetEmoji').value = '';
+            });
+            
+            // Initialize dashboard when DOM is loaded
+            initializeDashboard();
+        });
+    </script>
+</body>
+</html> 
