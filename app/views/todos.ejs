@@ -5,73 +5,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Todo App</title>
-    <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Docker Multi-Container App</title>
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
 <body>
-    <div class="container m-5 p-2 rounded mx-auto bg-light shadow">
-        
-        <!-- App title section -->
-        <div class="row m-1 p-4">
-            <div class="col">
-                <div class="p-1 h1 text-primary text-center mx-auto display-inline-block">
-                    <u>Hello World</u>
-                </div>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="navbar-brand">Docker Multi-Container App</a>
+            <ul class="navbar-nav">
+                <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="/bento" class="nav-link">Bento UI</a></li>
+                <li class="nav-item"><a href="/bento-layout" class="nav-link">Bento Layout</a></li>
+                <li class="nav-item"><a href="/bento-merged" class="nav-link">Bento Merged</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="header">
+            <div class="container">
+                <h1>Todo Application</h1>
             </div>
         </div>
-            <div class="row m-1 p-3">
-                <div class="col col-11 mx-auto">
-                    <form method="POST" action="/" autocomplete="off">
-                        <div class="row m-1 p-3">
-                            <div class="col col-11 mx-auto">
-                                <div class="row bg-white rounded shadow-sm p-2 add-todo-wrapper align-items-center justify-content-center">
-                                    <div class="col">
-                                        <input class="form-control form-control-lg border-0 add-todo-input bg-transparent rounded" type="text" name="task" placeholder="Add new Task">
-                                    </div>
-                                    <div class="col-auto px-0 mx-0 mr-2">
-                                        <button type="submit" class="btn btn-primary">Add</button>
-                                    </div>
-                                </div>
+        
+        <div class="todo-container">
+            <form method="POST" action="/" autocomplete="off" class="todo-form">
+                <input type="text" name="task" placeholder="Add new task">
+                <button type="submit">Add</button>
+            </form>
+            
+            <% if(Object.keys(tasks).length > 0) { %>
+                <ul class="todo-list">
+                    <% tasks.forEach(todo => { %>
+                        <li class="todo-item">
+                            <div>
+                                <div><%= todo.task %></div>
+                                <small><%= moment(todo.created_at).fromNow() %></small>
                             </div>
-                        </div>
-                    </form>
-                    <hr>
-                    <div class="row">
-                        <div class="col-12">
-                            <% if(Object.keys(tasks).length> 0) { %>
-                                <ul class="nav flex-column">
-                                    <% tasks.forEach(todo=> { %>
-                                        <li class="nav-item">
-                                            <div class="d-flex justify-content-between py-1">
-                                                <div class="d-flex flex-row">
-                                                    <div>
-                                                        <%= todo.task %>
-                                                            <p class="text-muted"><small>
-                                                                    <%= moment(todo.created_at).fromNow() %>
-                                                                </small></p>
-                                                    </div>
-                                                </div>
-                                                <a href="javascript:;" onclick="this.children[0].submit()"
-                                                    class="text-danger">
-                                                    <form method="POST" action="/todo/destroy">
-                                                        <input type="hidden" name="_key" value="<%= todo._id %>" />
-                                                    </form>
-                                                    <i class="fa fa-trash-o"></i>
-                                                </a>
-                                            </div>
-                                        </li>
-                                        <% }) %>
-                                </ul>
-                                <% } else { %>
-                                    <div class="text-center"><strong>Please add some task.</strong></div>
-                                    <% }%>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                            <a href="javascript:;" onclick="this.children[0].submit()">
+                                <form method="POST" action="/todo/destroy">
+                                    <input type="hidden" name="_key" value="<%= todo._id %>" />
+                                </form>
+                                <button class="delete-button"><i class="fa fa-trash-o"></i></button>
+                            </a>
+                        </li>
+                    <% }) %>
+                </ul>
+            <% } else { %>
+                <div class="empty-state">Please add some tasks.</div>
+            <% }%>
         </div>
     </div>
 </body>

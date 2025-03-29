@@ -781,25 +781,34 @@
         /* Resize handle */
         .resize-handle {
             position: absolute;
-            width: 16px;
-            height: 16px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            bottom: 4px;
-            right: 4px;
+            width: 20px;
+            height: 20px;
+            bottom: 0;
+            right: 0;
             cursor: nwse-resize;
             z-index: 10;
-            opacity: 0;
-            transition: opacity 0.2s, transform 0.2s;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .resize-handle::before {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 12px;
+            height: 12px;
+            border-bottom: 2px solid var(--text-color);
+            border-right: 2px solid var(--text-color);
+            opacity: 0.7;
+        }
+
+        .dark-mode .resize-handle::before {
+            border-color: var(--light-text);
         }
 
         .widget:hover .resize-handle {
             opacity: 1;
-        }
-
-        .widget:hover .resize-handle:hover {
-            transform: scale(1.2);
-            box-shadow: 0 0 10px rgba(67, 97, 238, 0.5);
         }
 
         /* Widget themes */
@@ -831,23 +840,37 @@
             color: white;
         }
 
+        /* Dragging and resizing states */
+        .widget.dragging {
+            opacity: 0.9;
+            z-index: 100;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
+            cursor: grabbing;
+            transition: none;
+        }
+
+        .widget.resizing {
+            transition: none;
+            z-index: 100;
+        }
+
         /* Ghost element for drag preview */
         .ghost-widget {
-            background: rgba(67, 97, 238, 0.2);
-            border: 2px dashed var(--primary-color);
-            border-radius: var(--border-radius);
             position: absolute;
-            z-index: 5;
+            background: rgba(67, 97, 238, 0.2);
+            border: 2px dashed var(--secondary-color);
+            border-radius: var(--border-radius);
+            z-index: 10;
             pointer-events: none;
         }
 
-        /* Placeholder for widget resizing */
+        /* Resize placeholder */
         .resize-placeholder {
-            background: rgba(67, 97, 238, 0.15);
-            border: 2px dashed var(--primary-color);
-            border-radius: var(--border-radius);
             position: absolute;
-            z-index: 5;
+            background: rgba(67, 97, 238, 0.2);
+            border: 2px dashed var(--secondary-color);
+            border-radius: var(--border-radius);
+            z-index: 10;
             pointer-events: none;
         }
 
@@ -1819,8 +1842,8 @@
     <div class="app-container">
         <header>
             <div class="header-title">
-                <h1>AI Bento Dashboard</h1>
-                <p>An interactive Japanese-inspired dashboard with drag & drop widgets</p>
+                <h1>Bento Dashboard <span class="header-emoji">✨</span></h1>
+                <p>A personalized <span class="highlight-text">dashboard experience</span> with modern UI</p>
             </div>
             <div class="header-controls">
                 <!-- Add search button with command+K shortcut -->
@@ -1832,241 +1855,21 @@
                         <span class="key">K</span>
                     </div>
                 </div>
-                <button class="btn btn-primary" id="add-widget-btn"><i class="fas fa-plus"></i> Add Widget</button>
+                <button class="btn btn-primary" id="add-widget-btn">
+                    <i class="fas fa-plus"></i>
+                    Add Widget
+                </button>
             </div>
         </header>
 
-        <div class="bento-container">
-            <!-- Interactive 3D Widget -->
-            <div class="widget medium interactive-3d metal" style="grid-column: span 4; grid-row: span 3;">
-                <div class="widget-content">
-                    <div class="widget-title-with-emoji">
-                        <span class="widget-emoji">✨</span>
-                        <h3>3D Interactions</h3>
-                    </div>
-                    <p>Rotate this 3D cube using your mouse.</p>
-                    
-                    <div class="interactive-3d-object">
-                        <div class="cube-container">
-                            <div class="cube-face">1</div>
-                            <div class="cube-face">2</div>
-                            <div class="cube-face">3</div>
-                            <div class="cube-face">4</div>
-                            <div class="cube-face">5</div>
-                            <div class="cube-face">6</div>
-                        </div>
-                    </div>
-                    
-                    <div class="widget-meta">
-                        <span class="widget-tag"><i class="fas fa-cube"></i> Interactive</span>
-                        <span>Updated 2m ago</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- AI Assistant Widget with Presence -->
-            <div class="widget large glass" style="grid-column: span 5; grid-row: span 4;">
-                <div class="widget-content">
-                    <div class="widget-title-with-emoji">
-                        <span class="widget-emoji">🤖</span>
-                        <h3>AI Assistant</h3>
-                    </div>
-                    
-                    <div class="ai-presence">
-                        <div class="ai-presence-content">
-                            <div class="ai-bubble">
-                                <div class="ai-avatar">AI</div>
-                                <div class="ai-message">Hi there! I'm your dashboard assistant. How can I help you today?</div>
-                            </div>
-                            
-                            <div class="ai-actions">
-                                <button class="ai-action-btn">Summarize my day</button>
-                                <button class="ai-action-btn">Generate report</button>
-                                <button class="ai-action-btn">Set reminder</button>
-                            </div>
-                            
-                            <div class="ai-input">
-                                <input type="text" class="ai-input-field" placeholder="Ask me anything...">
-                                <button class="ai-input-btn"><i class="fas fa-paper-plane"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Modern Skeuomorphic Calendar Widget -->
-            <div class="widget small" style="grid-column: span 3; grid-row: span 3;">
-                <div class="widget-content">
-                    <div class="widget-title-with-emoji">
-                        <span class="widget-emoji">📅</span>
-                        <h3>Calendar</h3>
-                    </div>
-                    
-                    <div class="widget-tag"><i class="fas fa-calendar-check"></i> Today's Schedule</div>
-                    
-                    <div class="calendar-events">
-                        <div class="calendar-event">
-                            <div class="event-time">09:00 AM</div>
-                            <div class="event-title">Team Standup</div>
-                        </div>
-                        <div class="calendar-event">
-                            <div class="event-time">11:30 AM</div>
-                            <div class="event-title">Client Meeting</div>
-                        </div>
-                        <div class="calendar-event">
-                            <div class="event-time">02:00 PM</div>
-                            <div class="event-title">Design Review</div>
-                        </div>
-                    </div>
-                    
-                    <button class="widget-button">
-                        <i class="fas fa-plus"></i> Add Event
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Analytics Widget with 3D Chart -->
-            <div class="widget wide" style="grid-column: span 8; grid-row: span 3;">
-                <div class="widget-content">
-                    <div class="widget-title-with-emoji">
-                        <span class="widget-emoji">📊</span>
-                        <h3>Analytics Overview</h3>
-                    </div>
-                    
-                    <p>Monthly performance metrics</p>
-                    
-                    <div class="chart-3d-container">
-                        <div class="chart-3d">
-                            <!-- Chart will be generated via JavaScript -->
-                        </div>
-                    </div>
-                    
-                    <div class="widget-meta">
-                        <span class="widget-tag"><i class="fas fa-chart-line"></i> Growth</span>
-                        <span>Last updated: Today</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Text & Emoji Mix - Notes Widget -->
-            <div class="widget small glass" style="grid-column: span 3; grid-row: span 3;">
-                <div class="widget-content">
-                    <div class="widget-title-with-emoji">
-                        <span class="widget-emoji">📝</span>
-                        <h3>Quick Notes</h3>
-                    </div>
-                    
-                    <div class="notes-content">
-                        <p>Remember to finish the <span class="highlight-text">design proposal</span> 🎨 for tomorrow's meeting!</p>
-                        <p>Call ☎️ Sarah about the project timeline</p>
-                        <p>Review 👀 feedback from last week's presentation</p>
-                    </div>
-                    
-                    <button class="widget-button">
-                        <i class="fas fa-edit"></i> New Note
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Progress Widget -->
-            <div class="widget small metal" style="grid-column: span 3; grid-row: span 2;">
-                <div class="widget-content">
-                    <div class="widget-title-with-emoji">
-                        <span class="widget-emoji">🚀</span>
-                        <h3>Project Progress</h3>
-                    </div>
-                    
-                    <div class="widget-progress-container">
-                        <div class="widget-progress-bar" style="--progress: 65%"></div>
-                    </div>
-                    
-                    <div class="progress-stats">
-                        <div class="progress-stat">
-                            <div class="stat-label">Completed</div>
-                            <div class="stat-value">65%</div>
-                        </div>
-                        <div class="progress-stat">
-                            <div class="stat-label">Remaining</div>
-                            <div class="stat-value">5 days</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Weather Widget with Skeuomorphic Design -->
-            <div class="widget small glass" style="grid-column: span 3; grid-row: span 2;">
-                <div class="widget-content">
-                    <div class="widget-title-with-emoji">
-                        <span class="widget-emoji">🌤️</span>
-                        <h3>Weather</h3>
-                    </div>
-                    
-                    <div class="weather-info">
-                        <div class="weather-temp">72°</div>
-                        <div class="weather-desc">Partly Cloudy</div>
-                        <div class="weather-location">San Francisco, CA</div>
-                    </div>
-                    
-                    <div class="weather-forecast">
-                        <div class="forecast-day">
-                            <div>Mon</div>
-                            <div><i class="fas fa-sun"></i></div>
-                            <div>75°</div>
-                        </div>
-                        <div class="forecast-day">
-                            <div>Tue</div>
-                            <div><i class="fas fa-cloud-sun"></i></div>
-                            <div>72°</div>
-                        </div>
-                        <div class="forecast-day">
-                            <div>Wed</div>
-                            <div><i class="fas fa-cloud"></i></div>
-                            <div>68°</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Tasks Widget with Notion-like features -->
-            <div class="widget medium" style="grid-column: span 4; grid-row: span 3;">
-                <div class="widget-content">
-                    <div class="widget-title-with-emoji">
-                        <span class="widget-emoji">✅</span>
-                        <h3>Tasks</h3>
-                    </div>
-                    
-                    <div class="tasks-list">
-                        <div class="task-item completed">
-                            <div class="task-checkbox"><i class="fas fa-check"></i></div>
-                            <div class="task-content">Initial design wireframes</div>
-                        </div>
-                        <div class="task-item">
-                            <div class="task-checkbox"></div>
-                            <div class="task-content">Review client feedback</div>
-                        </div>
-                        <div class="task-item">
-                            <div class="task-checkbox"></div>
-                            <div class="task-content">Prepare presentation slides</div>
-                        </div>
-                        <div class="task-item">
-                            <div class="task-checkbox"></div>
-                            <div class="task-content">Update project timeline</div>
-                        </div>
-                        <div class="task-item">
-                            <div class="task-checkbox"></div>
-                            <div class="task-content">Schedule follow-up meeting</div>
-                        </div>
-                    </div>
-                    
-                    <div class="task-add">
-                        <input type="text" placeholder="Add a new task..." class="task-input">
-                        <button class="task-add-btn"><i class="fas fa-plus"></i></button>
-                    </div>
-                </div>
-            </div>
+        <div class="bento-container" id="bentoGrid">
+            <!-- Widgets will be dynamically created here -->
         </div>
     </div>
-    
+
+    <!-- Particle effects container -->
+    <div id="particles"></div>
+
     <!-- Modal for adding widgets -->
     <div class="modal-overlay" id="addWidgetModal">
         <div class="modal-content glass">
@@ -2078,696 +1881,199 @@
                 <form id="addWidgetForm">
                     <div class="form-group">
                         <label for="widgetTitle">Widget Title</label>
-                    ${badgeElement}
-                    ${kanjiElement}
-                    ${patternElement}
-                    ${waveElement}
-                    <div class="glow-effect"></div>
-                    <div class="resize-handle"></div>
-                `;
-                
-                bentoGrid.appendChild(widgetElement);
-                
-                // Setup drag functionality
-                setupWidgetDrag(widgetElement);
-                
-                // Setup resize functionality
-                setupWidgetResize(widgetElement);
-                
-                // Setup remove button
-                const removeBtn = widgetElement.querySelector('.widget-remove-btn');
-                removeBtn.addEventListener('click', () => removeWidget(widget.id));
-                
-                // Setup 3D tilt effect
-                setupTiltEffect(widgetElement);
-                
-                // Add click animation to the entire widget
-                widgetElement.addEventListener('click', function(e) {
-                    if (!e.target.closest('.widget-action-btn') && 
-                        !e.target.closest('.resize-handle') && 
-                        !activeDragWidget && 
-                        !activeResizeWidget) {
-                        addClickEffect(this);
-                    }
-                });
+                        <input type="text" id="widgetTitle" placeholder="Enter a title for your widget" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="widgetColumns">Width (Columns)</label>
+                            <select id="widgetColumns" required>
+                                <option value="1">1 Column</option>
+                                <option value="2">2 Columns</option>
+                                <option value="3" selected>3 Columns</option>
+                                <option value="6">Full Width</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="widgetRows">Height (Rows)</label>
+                            <select id="widgetRows" required>
+                                <option value="1" selected>1 Row</option>
+                                <option value="2">2 Rows</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="widgetTheme">Theme</label>
+                        <select id="widgetTheme">
+                            <option value="default" selected>Default</option>
+                            <option value="primary">Primary</option>
+                            <option value="accent">Accent</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="widgetIcon">Icon</label>
+                        <select id="widgetIcon">
+                            <option value="chart-line">Analytics</option>
+                            <option value="brain">AI</option>
+                            <option value="user-circle">Profile</option>
+                            <option value="bell">Notifications</option>
+                            <option value="cog">Settings</option>
+                            <option value="calendar">Calendar</option>
+                            <option value="image">Media</option>
+                            <option value="file-alt">Documents</option>
+                            <option value="comments">Messages</option>
+                            <option value="tasks">Tasks</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="widgetKanji">Kanji (Optional)</label>
+                        <select id="widgetKanji">
+                            <option value="">None</option>
+                            <option value="智">智 (Intelligence)</option>
+                            <option value="創">創 (Creation)</option>
+                            <option value="力">力 (Power)</option>
+                            <option value="美">美 (Beauty)</option>
+                            <option value="技">技 (Skill)</option>
+                            <option value="和">和 (Harmony)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelWidgetBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveWidgetBtn">Add Widget</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create widget DOM element
+        function createWidgetElement(widget) {
+            const widgetElement = document.createElement('div');
+            widgetElement.className = `widget widget-cols-${widget.cols} widget-rows-${widget.rows} glass`;
+            
+            // Add animation delay based on widget ID for staggered entrance
+            widgetElement.style.animationDelay = `${(widget.id - 1) * 0.1}s`;
+            
+            if (widget.theme !== 'default') {
+                widgetElement.classList.add(`widget-theme-${widget.theme}`);
             }
+            
+            // Add modern styles based on ID to have variety
+            if (widget.id % 3 === 0) {
+                widgetElement.classList.add('metal');
+            } else if (widget.id % 3 === 1) {
+                widgetElement.classList.add('glass');
+            } else if (widget.id % 4 === 0) {
+                widgetElement.classList.add('interactive-3d');
+            }
+            
+            widgetElement.dataset.id = widget.id;
+            
+            let kanjiElement = widget.kanji ? `<div class="kanji-watermark">${widget.kanji}</div>` : '';
+            let waveElement = widget.theme !== 'default' ? '<div class="wave-pattern"></div>' : '';
+            let patternElement = widget.id % 2 === 0 ? '<div class="ai-pattern"></div>' : '';
+            let badgeElement = widget.theme !== 'default' ? `<div class="ai-badge">${widget.theme === 'primary' ? 'AI-Powered' : 'Creative Tools'}</div>` : '';
+            
+            widgetElement.innerHTML = `
+                <div class="widget-header">
+                    <div class="widget-title-with-emoji">
+                        <span class="widget-emoji">${getEmojiForIcon(widget.icon)}</span>
+                        <div class="widget-title">${widget.title}</div>
+                    </div>
+                    <div class="widget-actions">
+                        <button class="widget-action-btn widget-edit-btn" title="Edit Widget">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="widget-action-btn widget-remove-btn" title="Remove Widget">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="widget-content">
+                    <p>${widget.content || 'Widget content goes here'}</p>
+                    
+                    <div class="widget-meta">
+                        <span class="widget-tag"><i class="fas fa-${widget.icon || 'chart-line'}"></i> ${getTagForIcon(widget.icon)}</span>
+                        <span>Updated just now</span>
+                    </div>
+                </div>
+                ${badgeElement}
+                ${kanjiElement}
+                ${patternElement}
+                ${waveElement}
+                <div class="glow-effect"></div>
+                <div class="resize-handle"></div>
+            `;
+            
+            bentoGrid.appendChild(widgetElement);
+            
+            // Setup drag functionality
+            setupWidgetDrag(widgetElement);
+            
+            // Setup resize functionality
+            setupWidgetResize(widgetElement);
+            
+            // Setup remove button
+            const removeBtn = widgetElement.querySelector('.widget-remove-btn');
+            removeBtn.addEventListener('click', () => removeWidget(widget.id));
             
             // Setup 3D tilt effect
-            function setupTiltEffect(element) {
-                element.addEventListener('mousemove', (e) => {
-                    if (activeDragWidget || activeResizeWidget) return;
-                    
-                    const rect = element.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    
-                    const xPercent = x / rect.width - 0.5;
-                    const yPercent = y / rect.height - 0.5;
-                    
-                    const tiltAmount = 3; // Max degrees of tilt
-                    const rotateX = tiltAmount * yPercent * -1;
-                    const rotateY = tiltAmount * xPercent;
-                    
-                    element.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(0)`;
-                });
-                
-                element.addEventListener('mouseleave', () => {
-                    element.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0)';
-                });
-            }
+            setupTiltEffect(widgetElement);
             
-            // Add click animation
-            function addClickEffect(element) {
-                element.classList.add('click-effect');
-                element.style.transform = 'scale(0.98)';
-                
-                setTimeout(() => {
-                    element.style.transform = 'scale(1)';
-                    setTimeout(() => {
-                        element.classList.remove('click-effect');
-                    }, 200);
-                }, 200);
-            }
-            
-            // Setup widget drag functionality
-            function setupWidgetDrag(element) {
-                const header = element.querySelector('.widget-header');
-                
-                header.addEventListener('mousedown', startDrag);
-                
-                function startDrag(e) {
-                    e.preventDefault();
-                    
-                    if (activeResizeWidget) return;
-                    
-                    const rect = element.getBoundingClientRect();
-                    
-                    activeDragWidget = element;
-                    element.classList.add('dragging');
-                    
-                    // Save starting positions
-                    startMouseX = e.clientX;
-                    startMouseY = e.clientY;
-                    startWidgetX = rect.left;
-                    startWidgetY = rect.top;
-                    
-                    // Create ghost element
-                    createGhostElement(element);
-                    
-                    // Add global mouse events
-                    document.addEventListener('mousemove', handleDrag);
-                    document.addEventListener('mouseup', stopDrag);
+            // Add click animation to the entire widget
+            widgetElement.addEventListener('click', function(e) {
+                if (!e.target.closest('.widget-action-btn') && 
+                    !e.target.closest('.resize-handle') && 
+                    !activeDragWidget && 
+                    !activeResizeWidget) {
+                    addClickEffect(this);
                 }
-                
-                function handleDrag(e) {
-                    if (!activeDragWidget) return;
-                    
-                    // Calculate the new position
-                    const deltaX = e.clientX - startMouseX;
-                    const deltaY = e.clientY - startMouseY;
-                    
-                    // Update position of the dragged element
-                    activeDragWidget.style.position = 'absolute';
-                    activeDragWidget.style.left = `${startWidgetX + deltaX}px`;
-                    activeDragWidget.style.top = `${startWidgetY + deltaY}px`;
-                    activeDragWidget.style.width = `${startWidgetWidth}px`;
-                    activeDragWidget.style.height = `${startWidgetHeight}px`;
-                    activeDragWidget.style.zIndex = '100';
-                    
-                    // Calculate grid position for ghost element
-                    const gridRect = bentoGrid.getBoundingClientRect();
-                    const relativeX = e.clientX - gridRect.left;
-                    const relativeY = e.clientY - gridRect.top;
-                    
-                    // Calculate grid column and row
-                    const col = Math.floor(relativeX / gridColumnWidth) + 1;
-                    const row = Math.floor(relativeY / gridRowHeight) + 1;
-                    
-                    // Update ghost element position to snap to grid
-                    if (ghostElement && col > 0 && row > 0) {
-                        const widgetColSpan = parseInt(activeDragWidget.classList.toString().match(/widget-cols-(\d+)/)[1]);
-                        const widgetRowSpan = parseInt(activeDragWidget.classList.toString().match(/widget-rows-(\d+)/)[1]);
-                        
-                        // Calculate grid position in pixels
-                        const gridX = (col - 1) * gridColumnWidth;
-                        const gridY = (row - 1) * gridRowHeight;
-                        
-                        ghostElement.style.left = `${gridX}px`;
-                        ghostElement.style.top = `${gridY}px`;
-                        ghostElement.style.width = `${widgetColSpan * gridColumnWidth - 20}px`;
-                        ghostElement.style.height = `${widgetRowSpan * gridRowHeight - 20}px`;
-                    }
-                }
-                
-                function stopDrag() {
-                    if (!activeDragWidget) return;
-                    
-                    // Clean up the ghost element
-                    if (ghostElement) {
-                        const ghostRect = ghostElement.getBoundingClientRect();
-                        const gridRect = bentoGrid.getBoundingClientRect();
-                        
-                        // Calculate final grid position
-                        const col = Math.floor((ghostRect.left - gridRect.left) / gridColumnWidth) + 1;
-                        const row = Math.floor((ghostRect.top - gridRect.top) / gridRowHeight) + 1;
-                        
-                        // Reset the widget's style
-                        activeDragWidget.style.position = '';
-                        activeDragWidget.style.left = '';
-                        activeDragWidget.style.top = '';
-                        activeDragWidget.style.width = '';
-                        activeDragWidget.style.height = '';
-                        activeDragWidget.style.zIndex = '';
-                        
-                        // Move the widget to the new position in the DOM
-                        if (col > 0 && row > 0) {
-                            // Update the order in the grid
-                            bentoGrid.appendChild(activeDragWidget);
-                            
-                            // Update the widget data
-                            const widgetId = parseInt(activeDragWidget.dataset.id);
-                            const widgetIndex = widgets.findIndex(w => w.id === widgetId);
-                            if (widgetIndex >= 0) {
-                                widgets[widgetIndex].gridCol = col;
-                                widgets[widgetIndex].gridRow = row;
-                            }
-                        }
-                        
-                        bentoGrid.removeChild(ghostElement);
-                        ghostElement = null;
-                    }
-                    
-                    activeDragWidget.classList.remove('dragging');
-                    activeDragWidget = null;
-                    
-                    // Remove global mouse events
-                    document.removeEventListener('mousemove', handleDrag);
-                    document.removeEventListener('mouseup', stopDrag);
-                }
-            }
-            
-            // Setup widget resize functionality
-            function setupWidgetResize(element) {
-                const resizeHandle = element.querySelector('.resize-handle');
-                
-                resizeHandle.addEventListener('mousedown', startResize);
-                
-                function startResize(e) {
-                    e.preventDefault();
-                    
-                    if (activeDragWidget) return;
-                    
-                    const rect = element.getBoundingClientRect();
-                    
-                    activeResizeWidget = element;
-                    element.classList.add('resizing');
-                    
-                    // Save starting positions and dimensions
-                    startMouseX = e.clientX;
-                    startMouseY = e.clientY;
-                    startWidgetWidth = rect.width;
-                    startWidgetHeight = rect.height;
-                    
-                    // Create resize placeholder
-                    createResizePlaceholder(element);
-                    
-                    // Add global mouse events
-                    document.addEventListener('mousemove', handleResize);
-                    document.addEventListener('mouseup', stopResize);
-                }
-                
-                function handleResize(e) {
-                    if (!activeResizeWidget) return;
-                    
-                    // Calculate the new dimensions
-                    const deltaX = e.clientX - startMouseX;
-                    const deltaY = e.clientY - startMouseY;
-                    
-                    const newWidth = Math.max(200, startWidgetWidth + deltaX);
-                    const newHeight = Math.max(200, startWidgetHeight + deltaY);
-                    
-                    // Calculate column and row span based on new dimensions
-                    const newColSpan = Math.max(1, Math.min(6, Math.round(newWidth / gridColumnWidth)));
-                    const newRowSpan = Math.max(1, Math.min(3, Math.round(newHeight / gridRowHeight)));
-                    
-                    // Update resize placeholder
-                    if (resizePlaceholder) {
-                        resizePlaceholder.style.width = `${newColSpan * gridColumnWidth - 20}px`;
-                        resizePlaceholder.style.height = `${newRowSpan * gridRowHeight - 20}px`;
-                        
-                        // Store the new dimensions on the placeholder
-                        resizePlaceholder.dataset.newColSpan = newColSpan;
-                        resizePlaceholder.dataset.newRowSpan = newRowSpan;
-                    }
-                }
-                
-                function stopResize() {
-                    if (!activeResizeWidget) return;
-                    
-                    // Apply the new dimensions from the placeholder
-                    if (resizePlaceholder) {
-                        const newColSpan = parseInt(resizePlaceholder.dataset.newColSpan);
-                        const newRowSpan = parseInt(resizePlaceholder.dataset.newRowSpan);
-                        
-                        // Remove existing column and row classes
-                        activeResizeWidget.classList.forEach(className => {
-                            if (className.match(/widget-cols-\d+/)) {
-                                activeResizeWidget.classList.remove(className);
-                            }
-                            if (className.match(/widget-rows-\d+/)) {
-                                activeResizeWidget.classList.remove(className);
-                            }
-                        });
-                        
-                        // Add new column and row classes
-                        activeResizeWidget.classList.add(`widget-cols-${newColSpan}`);
-                        activeResizeWidget.classList.add(`widget-rows-${newRowSpan}`);
-                        
-                        // Update the widget data
-                        const widgetId = parseInt(activeResizeWidget.dataset.id);
-                        const widgetIndex = widgets.findIndex(w => w.id === widgetId);
-                        if (widgetIndex >= 0) {
-                            widgets[widgetIndex].cols = newColSpan;
-                            widgets[widgetIndex].rows = newRowSpan;
-                        }
-                        
-                        bentoGrid.removeChild(resizePlaceholder);
-                        resizePlaceholder = null;
-                    }
-                    
-                    activeResizeWidget.classList.remove('resizing');
-                    activeResizeWidget = null;
-                    
-                    // Remove global mouse events
-                    document.removeEventListener('mousemove', handleResize);
-                    document.removeEventListener('mouseup', stopResize);
-                }
-            }
-            
-            // Create a ghost element to show where the widget will be placed
-            function createGhostElement(element) {
-                const rect = element.getBoundingClientRect();
-                
-                ghostElement = document.createElement('div');
-                ghostElement.className = 'ghost-widget';
-                
-                // Set the ghost element dimensions based on the original element
-                startWidgetWidth = rect.width;
-                startWidgetHeight = rect.height;
-                
-                ghostElement.style.width = `${startWidgetWidth - 20}px`;
-                ghostElement.style.height = `${startWidgetHeight - 20}px`;
-                
-                // Position the ghost element initially
-                ghostElement.style.left = `${rect.left - bentoGrid.getBoundingClientRect().left}px`;
-                ghostElement.style.top = `${rect.top - bentoGrid.getBoundingClientRect().top}px`;
-                
-                bentoGrid.appendChild(ghostElement);
-            }
-            
-            // Create a placeholder for resizing
-            function createResizePlaceholder(element) {
-                const rect = element.getBoundingClientRect();
-                const gridRect = bentoGrid.getBoundingClientRect();
-                
-                resizePlaceholder = document.createElement('div');
-                resizePlaceholder.className = 'resize-placeholder';
-                
-                // Set the placeholder dimensions and position
-                resizePlaceholder.style.width = `${rect.width - 20}px`;
-                resizePlaceholder.style.height = `${rect.height - 20}px`;
-                resizePlaceholder.style.left = `${rect.left - gridRect.left}px`;
-                resizePlaceholder.style.top = `${rect.top - gridRect.top}px`;
-                
-                bentoGrid.appendChild(resizePlaceholder);
-            }
-            
-            // Calculate grid dimensions
-            function calculateGridDimensions() {
-                const gridRect = bentoGrid.getBoundingClientRect();
-                const gridComputedStyle = window.getComputedStyle(bentoGrid);
-                const gridGap = parseInt(gridComputedStyle.getPropertyValue('gap'));
-                
-                const gridTemplateColumnsValue = gridComputedStyle.getPropertyValue('grid-template-columns');
-                const columnCount = gridTemplateColumnsValue.split(' ').length;
-                
-                gridColumnWidth = (gridRect.width - (gridGap * (columnCount - 1))) / columnCount;
-                gridRowHeight = 200 + gridGap; // Approximate row height
-            }
-            
-            // Modal Functions
-            function openAddWidgetModal() {
-                addWidgetModal.classList.add('active');
-            }
-            
-            function closeAddWidgetModal() {
-                addWidgetModal.classList.remove('active');
-                addWidgetForm.reset();
-            }
-            
-            function saveNewWidget() {
-                const title = document.getElementById('widgetTitle').value;
-                const cols = parseInt(document.getElementById('widgetColumns').value);
-                const rows = parseInt(document.getElementById('widgetRows').value);
-                const theme = document.getElementById('widgetTheme').value;
-                const icon = document.getElementById('widgetIcon').value;
-                const kanji = document.getElementById('widgetKanji').value;
-                
-                if (!title) {
-                    alert('Please enter a widget title');
-                    return;
-                }
-                
-                const newWidget = {
-                    id: nextWidgetId++,
-                    title,
-                    cols,
-                    rows,
-                    theme,
-                    icon,
-                    kanji,
-                    content: 'New widget content'
-                };
-                
-                widgets.push(newWidget);
-                createWidgetElement(newWidget);
-                
-                closeAddWidgetModal();
-            }
-            
-            // Remove a widget
-            function removeWidget(id) {
-                const widgetElement = document.querySelector(`.widget[data-id="${id}"]`);
-                
-                if (widgetElement) {
-                    // Add removal animation
-                    widgetElement.style.transform = 'scale(0.9)';
-                    widgetElement.style.opacity = '0';
-                    
-                    setTimeout(() => {
-                        bentoGrid.removeChild(widgetElement);
-                        
-                        // Remove from the widgets array
-                        const widgetIndex = widgets.findIndex(w => w.id === id);
-                        if (widgetIndex >= 0) {
-                            widgets.splice(widgetIndex, 1);
-                        }
-                    }, 300);
-                }
-            }
-            
-            // Create particles
-            function createParticles() {
-                const particlesContainer = document.getElementById('particles');
-                const particleCount = 30;
-                
-                for (let i = 0; i < particleCount; i++) {
-                    const particle = document.createElement('div');
-                    particle.className = 'particle';
-                    
-                    // Random properties
-                    const size = Math.random() * 15 + 5;
-                    const color = getRandomColor(0.2);
-                    const startPositionX = Math.random() * 100;
-                    const duration = Math.random() * 30 + 15;
-                    const delay = Math.random() * 10;
-                    
-                    // Set styles
-                    particle.style.width = `${size}px`;
-                    particle.style.height = `${size}px`;
-                    particle.style.background = color;
-                    particle.style.left = `${startPositionX}%`;
-                    particle.style.top = '100%';
-                    particle.style.animationDuration = `${duration}s`;
-                    particle.style.animationDelay = `${delay}s`;
-                    
-                    particlesContainer.appendChild(particle);
-                }
-            }
-            
-            // Get random color with transparency
-            function getRandomColor(alpha) {
-                const colors = [
-                    `rgba(255, 107, 107, ${alpha})`,  // primary
-                    `rgba(67, 97, 238, ${alpha})`,    // secondary
-                    `rgba(156, 39, 176, ${alpha})`,   // accent
-                    `rgba(58, 12, 163, ${alpha})`,    // dark purple
-                    `rgba(247, 37, 133, ${alpha})`    // pink
-                ];
-                
-                return colors[Math.floor(Math.random() * colors.length)];
-            }
-
-            // Add command palette functionality
-            document.addEventListener('DOMContentLoaded', function() {
-                const commandPalette = document.getElementById('command-palette');
-                const commandBackdrop = document.getElementById('command-backdrop');
-                const commandInput = document.getElementById('command-input');
-                const searchButton = document.getElementById('search-button');
-                
-                // Function to open command palette
-                function openCommandPalette() {
-                    commandPalette.classList.add('active');
-                    commandBackdrop.classList.add('active');
-                    setTimeout(() => {
-                        commandInput.focus();
-                    }, 100);
-                }
-                
-                // Function to close command palette
-                function closeCommandPalette() {
-                    commandPalette.classList.remove('active');
-                    commandBackdrop.classList.remove('active');
-                }
-                
-                // Open command palette with search button
-                searchButton.addEventListener('click', openCommandPalette);
-                
-                // Open command palette with keyboard shortcut (Cmd+K or Ctrl+K)
-                document.addEventListener('keydown', function(e) {
-                    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                        e.preventDefault();
-                        openCommandPalette();
-                    }
-                    
-                    // Dark mode toggle with Cmd+D or Ctrl+D
-                    if ((e.metaKey || e.ctrlKey) && e.key === 'd') {
-                        e.preventDefault();
-                        document.body.classList.toggle('dark-mode');
-                        const isDarkMode = document.body.classList.contains('dark-mode');
-                        const icon = document.querySelector('.dark-mode-toggle i');
-                        icon.className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
-                    }
-                    
-                    // Escape key to close command palette
-                    if (e.key === 'Escape' && commandPalette.classList.contains('active')) {
-                        closeCommandPalette();
-                    }
-                    
-                    // Slash key for quick search - Notion-like behavior
-                    if (e.key === '/' && !commandPalette.classList.contains('active') && 
-                        document.activeElement.tagName !== 'INPUT' && 
-                        document.activeElement.tagName !== 'TEXTAREA') {
-                        e.preventDefault();
-                        openCommandPalette();
-                    }
-                });
-                
-                // Close when clicking on backdrop
-                commandBackdrop.addEventListener('click', closeCommandPalette);
-                
-                // Command item keyboard navigation
-                const commandItems = document.querySelectorAll('.command-item');
-                let selectedIndex = -1;
-                
-                commandInput.addEventListener('keydown', function(e) {
-                    if (e.key === 'ArrowDown') {
-                        e.preventDefault();
-                        selectedIndex = (selectedIndex + 1) % commandItems.length;
-                        highlightSelected();
-                    } else if (e.key === 'ArrowUp') {
-                        e.preventDefault();
-                        selectedIndex = (selectedIndex - 1 + commandItems.length) % commandItems.length;
-                        highlightSelected();
-                    } else if (e.key === 'Enter' && selectedIndex >= 0) {
-                        e.preventDefault();
-                        commandItems[selectedIndex].click();
-                    }
-                });
-                
-                function highlightSelected() {
-                    commandItems.forEach(item => item.classList.remove('selected'));
-                    if (selectedIndex >= 0) {
-                        commandItems[selectedIndex].classList.add('selected');
-                        commandItems[selectedIndex].scrollIntoView({ block: 'nearest' });
-                    }
-                }
-                
-                // Add click event for command items
-                commandItems.forEach(item => {
-                    item.addEventListener('click', function() {
-                        const title = this.querySelector('.command-title').textContent;
-                        
-                        if (title === 'Change Theme') {
-                            document.body.classList.toggle('dark-mode');
-                            const isDarkMode = document.body.classList.contains('dark-mode');
-                            const icon = document.querySelector('.dark-mode-toggle i');
-                            icon.className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
-                        }
-                        
-                        // Add more command actions here
-                        
-                        closeCommandPalette();
-                    });
-                });
-                
-                // Initialize 3D cube interaction
-                const cubeContainers = document.querySelectorAll('.cube-container');
-                
-                cubeContainers.forEach(cube => {
-                    let isDragging = false;
-                    let previousX = 0;
-                    let previousY = 0;
-                    let rotateX = -20;
-                    let rotateY = -20;
-                    
-                    const container = cube.closest('.interactive-3d-object');
-                    
-                    container.addEventListener('mousedown', (e) => {
-                        isDragging = true;
-                        previousX = e.clientX;
-                        previousY = e.clientY;
-                        container.style.cursor = 'grabbing';
-                    });
-                    
-                    document.addEventListener('mousemove', (e) => {
-                        if (!isDragging) return;
-                        
-                        const deltaX = e.clientX - previousX;
-                        const deltaY = e.clientY - previousY;
-                        
-                        rotateY += deltaX * 0.5;
-                        rotateX -= deltaY * 0.5;
-                        
-                        cube.style.transform = `translate(-50%, -50%) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-                        
-                        previousX = e.clientX;
-                        previousY = e.clientY;
-                    });
-                    
-                    document.addEventListener('mouseup', () => {
-                        isDragging = false;
-                        container.style.cursor = 'grab';
-                    });
-                    
-                    document.addEventListener('mouseleave', () => {
-                        isDragging = false;
-                        container.style.cursor = 'grab';
-                    });
-                });
-                
-                // Initialize charts with 3D effect
-                const chartContainers = document.querySelectorAll('.chart-3d-container');
-                
-                chartContainers.forEach(container => {
-                    const chart = container.querySelector('.chart-3d');
-                    const floor = document.createElement('div');
-                    floor.className = 'chart-floor';
-                    chart.appendChild(floor);
-                    
-                    // Create floor grid
-                    for (let i = 0; i < 144; i++) {
-                        const tile = document.createElement('div');
-                        tile.className = 'chart-floor-tile';
-                        floor.appendChild(tile);
-                    }
-                    
-                    // Add 3D bars
-                    const data = [30, 60, 45, 70, 85, 55, 40, 75, 50];
-                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
-                    
-                    data.forEach((value, index) => {
-                        const bar = document.createElement('div');
-                        bar.className = 'chart-bar';
-                        bar.style.height = '0px';
-                        bar.style.left = `${index * 40 + 40}px`;
-                        chart.appendChild(bar);
-                        
-                        const label = document.createElement('div');
-                        label.className = 'chart-label';
-                        label.textContent = months[index];
-                        label.style.left = `${index * 40 + 40}px`;
-                        chart.appendChild(label);
-                        
-                        // Animate bar height after a delay
-                        setTimeout(() => {
-                            bar.style.height = `${value}px`;
-                        }, 300 + index * 100);
-                    });
-                });
-                
-                // Apply floating animation to appropriate widgets
-                const widgets = document.querySelectorAll('.widget');
-                widgets.forEach((widget, index) => {
-                    widget.style.setProperty('--index', index);
-                    
-                    // Randomly assign floating animation to some widgets
-                    if (Math.random() > 0.7) {
-                        widget.classList.add('floating');
-                    }
-                });
-                
-                // Notion-like progressive blur effect on scroll
-                const header = document.querySelector('header');
-                window.addEventListener('scroll', function() {
-                    const scrollY = window.scrollY;
-                    if (scrollY > 10) {
-                        header.style.backdropFilter = `blur(${Math.min(scrollY / 5, 20)}px)`;
-                        header.style.webkitBackdropFilter = `blur(${Math.min(scrollY / 5, 20)}px)`;
-                        header.style.background = `rgba(255, 255, 255, ${Math.min(scrollY / 200, 0.8)})`;
-                        header.style.boxShadow = `0 4px 20px rgba(0, 0, 0, ${Math.min(scrollY / 500, 0.1)})`;
-                    } else {
-                        header.style.backdropFilter = 'blur(0px)';
-                        header.style.webkitBackdropFilter = 'blur(0px)';
-                        header.style.background = 'transparent';
-                        header.style.boxShadow = 'none';
-                    }
-                });
-
-                // AI message typing effect
-                const aiMessages = document.querySelectorAll('.ai-message');
-                aiMessages.forEach(message => {
-                    const originalText = message.textContent;
-                    message.textContent = '';
-                    
-                    let charIndex = 0;
-                    const typingInterval = setInterval(() => {
-                        if (charIndex < originalText.length) {
-                            message.textContent += originalText.charAt(charIndex);
-                            charIndex++;
-                        } else {
-                            clearInterval(typingInterval);
-                        }
-                    }, 30);
-                });
-                
-                // Init dark mode based on user preference
-                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                    document.body.classList.add('dark-mode');
-                    const icon = document.querySelector('.dark-mode-toggle i');
-                    icon.className = 'fas fa-sun';
-                }
-                
-                // Dark mode toggle click handler
-                const darkModeToggle = document.getElementById('darkModeToggle');
-                darkModeToggle.addEventListener('click', () => {
-                    document.body.classList.toggle('dark-mode');
-                    const isDarkMode = document.body.classList.contains('dark-mode');
-                    const icon = document.querySelector('.dark-mode-toggle i');
-                    icon.className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
-                });
             });
-        });
+        }
+        
+        // Helper to get emoji based on icon
+        function getEmojiForIcon(icon) {
+            const emojiMap = {
+                'chart-line': '📊',
+                'brain': '🧠',
+                'user-circle': '👤',
+                'bell': '🔔',
+                'cog': '⚙️',
+                'calendar': '📅',
+                'image': '🖼️',
+                'file-alt': '📄',
+                'comments': '💬',
+                'tasks': '✅',
+                'bolt': '⚡',
+                'pen-fancy': '✒️'
+            };
+            
+            return emojiMap[icon] || '✨';
+        }
+        
+        // Helper to get tag text based on icon
+        function getTagForIcon(icon) {
+            const tagMap = {
+                'chart-line': 'Analytics',
+                'brain': 'AI',
+                'user-circle': 'Profile',
+                'bell': 'Notifications',
+                'cog': 'Settings',
+                'calendar': 'Calendar',
+                'image': 'Media',
+                'file-alt': 'Documents',
+                'comments': 'Messages',
+                'tasks': 'Tasks',
+                'bolt': 'Quick',
+                'pen-fancy': 'Notes'
+            };
+            
+            return tagMap[icon] || 'Widget';
+        }
     </script>
 </body>
 </html> 
